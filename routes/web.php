@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\OrderController;
@@ -42,7 +43,10 @@ Route::middleware(['auth', 'role:admin,operator'])->prefix('admin')->name('admin
         ->name('notification-templates');
 
     Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+    Route::get('analytics/campaigns', [AnalyticsController::class, 'campaigns'])->name('analytics.campaigns');
     Route::get('analytics/lp/{landingPage}', [AnalyticsController::class, 'lpDetail'])->name('analytics.lp');
+
+    Route::resource('campaigns', CampaignController::class)->except(['show']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -60,6 +64,7 @@ Route::get('/checkout/{order}', [CheckoutController::class, 'payment'])->name('c
 Route::get('/checkout/finish', [CheckoutController::class, 'finish'])->name('checkout.finish');
 Route::get('/checkout/error', [CheckoutController::class, 'error'])->name('checkout.error');
 Route::get('/checkout/pending', [CheckoutController::class, 'pending'])->name('checkout.pending');
+Route::get('/checkout/cod/{order}', [CheckoutController::class, 'cod'])->name('checkout.cod');
 
 Route::get('/track/{orderNumber}', [TrackingController::class, 'show'])->name('tracking.show');
 Route::post('/track', [TrackingController::class, 'track'])->name('tracking.lookup');

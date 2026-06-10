@@ -59,6 +59,7 @@ class LPController extends Controller
             'shipping_service' => 'nullable|string|max:50',
             'shipping_cost' => 'nullable|numeric|min:0',
             'qty' => 'nullable|integer|min:1',
+            'is_cod' => 'nullable|boolean',
         ]);
 
         $landingPage = LandingPage::with('product')->findOrFail($validated['landing_page_id']);
@@ -67,6 +68,8 @@ class LPController extends Controller
         $shippingCost = $validated['shipping_cost'] ?? 0;
         $unitPrice = $landingPage->product->sell_price;
         $totalAmount = ($unitPrice * $qty) + $shippingCost;
+
+        $isCod = $request->boolean('is_cod');
 
         $order = Order::create([
             'landing_page_id' => $landingPage->id,
@@ -83,11 +86,18 @@ class LPController extends Controller
             'shipping_service' => $validated['shipping_service'],
             'shipping_cost' => $shippingCost,
             'total_amount' => $totalAmount,
+            'payment_method' => $isCod ? 'cod' : null,
+            'is_cod' => $isCod,
             'utm_source' => $request->input('utm_source'),
             'utm_medium' => $request->input('utm_medium'),
             'utm_campaign' => $request->input('utm_campaign'),
             'utm_content' => $request->input('utm_content'),
         ]);
+
+        if ($isCod) {
+            $whatsapp->sendOrderConfirmation($order, route('tracking.show', $order->order_number));
+            return redirect()->route('checkout.cod', ['order' => $order->order_number]);
+        }
 
         $paymentUrl = route('checkout.payment', ['order' => $order->order_number]);
         $whatsapp->sendOrderConfirmation($order, $paymentUrl);

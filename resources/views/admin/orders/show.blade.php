@@ -21,7 +21,13 @@
                 <div><span class="text-gray-500">Harga Satuan:</span> <span class="font-medium">Rp {{ number_format($order->unit_price, 0, ',', '.') }}</span></div>
                 <div><span class="text-gray-500">Ongkir:</span> <span class="font-medium">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span></div>
                 <div><span class="text-gray-500">Total:</span> <span class="font-bold text-blue-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span></div>
-                <div><span class="text-gray-500">Metode Bayar:</span> <span class="font-medium">{{ $order->payment_method ?: '-' }}</span></div>
+                <div><span class="text-gray-500">Metode Bayar:</span>
+                    @if($order->is_cod)
+                        <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 font-medium">COD</span>
+                    @else
+                        <span class="font-medium">{{ $order->payment_method ?: '-' }}</span>
+                    @endif
+                </div>
                 <div><span class="text-gray-500">Kurir:</span> <span class="font-medium">{{ $order->shipping_courier ?: '-' }}</span></div>
                 <div><span class="text-gray-500">LP:</span> <a href="{{ url('/p/' . $order->landingPage->slug) }}" target="_blank" class="text-blue-600 hover:underline">{{ $order->landingPage->slug ?? '-' }}</a></div>
             </div>

@@ -48,6 +48,7 @@
                 <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Order</th>
                 <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
                 <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Produk</th>
+                <th class="text-center px-6 py-3 text-xs font-medium text-gray-500 uppercase">Metode</th>
                 <th class="text-right px-6 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
                 <th class="text-center px-6 py-3 text-xs font-medium text-gray-500 uppercase">Bayar</th>
                 <th class="text-center px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -68,6 +69,13 @@
                     <div class="text-gray-500 text-xs">{{ $order->customer_phone }}</div>
                 </td>
                 <td class="px-6 py-4 text-sm">{{ $order->product->name ?? '-' }}</td>
+                <td class="px-6 py-4 text-center">
+                    @if($order->is_cod)
+                        <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800">COD</span>
+                    @else
+                        <span class="text-xs text-gray-400">Transfer</span>
+                    @endif
+                </td>
                 <td class="px-6 py-4 text-sm text-right">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 text-center">
                     <span class="px-2 py-1 text-xs rounded-full @if($order->payment_status === 'paid') bg-green-100 text-green-800 @elseif($order->payment_status === 'expired') bg-red-100 text-red-800 @else bg-yellow-100 text-yellow-800 @endif">
@@ -89,7 +97,7 @@
                 <td class="px-6 py-4 text-sm text-gray-500">{{ $order->created_at->format('d/m H:i') }}</td>
             </tr>
             @empty
-            <tr><td colspan="8" class="px-6 py-8 text-center text-gray-500">Tidak ada order.</td></tr>
+            <tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">Tidak ada order.</td></tr>
             @endforelse
         </tbody>
     </table>

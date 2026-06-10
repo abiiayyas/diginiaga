@@ -125,6 +125,14 @@
                     <div id="shipping-options" class="shipping-options" style="display:none"></div>
                 </div>
 
+                <div class="form-group" style="margin-top: 12px">
+                    <label style="display: flex; align-items: center; cursor: pointer">
+                        <input type="checkbox" name="is_cod" value="1" id="cod-checkbox" onchange="toggleCod()" style="width: auto; margin-right: 8px;">
+                        <span>COD (Bayar di Tempat)</span>
+                    </label>
+                    <small id="cod-note" style="display: none; color: #92400e">Order akan diproses tanpa pembayaran di muka. Bayar saat paket diterima.</small>
+                </div>
+
                 <div class="total-display" id="total-display">
                     <div class="label">Total Pembayaran</div>
                     <div class="amount" id="total-amount">Rp {{ number_format($landingPage->product->sell_price, 0, ',', '.') }}</div>
@@ -216,6 +224,12 @@
     function updateTotal() {
         const total = productPrice + selectedShippingCost;
         document.getElementById('total-amount').textContent = 'Rp ' + total.toLocaleString('id-ID');
+    }
+
+    function toggleCod() {
+        const codNote = document.getElementById('cod-note');
+        const isChecked = document.getElementById('cod-checkbox').checked;
+        codNote.style.display = isChecked ? 'block' : 'none';
     }
 
     function trackCheckout() {

@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" id="stats-grid">
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8" id="stats-grid">
     <div class="bg-white rounded-lg shadow p-6">
         <div class="text-sm text-gray-500">Order Hari Ini</div>
         <div class="text-3xl font-bold text-gray-900">{{ $stats['total_orders_today'] }}</div>
@@ -13,12 +13,17 @@
         <div class="text-3xl font-bold text-green-600">Rp {{ number_format($stats['total_revenue_today'], 0, ',', '.') }}</div>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
-        <div class="text-sm text-gray-500">Menunggu Pembayaran</div>
+        <div class="text-sm text-gray-500">Menunggu Bayar</div>
         <div class="text-3xl font-bold text-yellow-600">{{ $stats['pending_orders'] }}</div>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
         <div class="text-sm text-gray-500">Perlu Diproses</div>
         <div class="text-3xl font-bold text-blue-600">{{ $stats['need_processing'] }}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-sm text-gray-500">Recovery Rate</div>
+        <div class="text-3xl font-bold {{ $stats['recovery_rate'] >= 10 ? 'text-green-600' : 'text-gray-600' }}">{{ $stats['recovery_rate'] }}%</div>
+        <div class="text-xs text-gray-400 mt-1">dari WA reminder</div>
     </div>
 </div>
 

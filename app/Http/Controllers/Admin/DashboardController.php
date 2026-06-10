@@ -14,6 +14,15 @@ class DashboardController extends Controller
     {
         $today = now()->startOfDay();
 
+        $totalPendingEver = Order::whereIn('order_status', ['pending_payment'])
+            ->whereNotIn('payment_status', ['paid'])
+            ->count()
+            + Order::where('payment_status', 'paid')->where('reminder_count', '>', 0)->count();
+
+        $recoveredOrders = Order::where('payment_status', 'paid')
+            ->where('reminder_count', '>', 0)
+            ->count();
+
         $stats = [
             'total_orders_today' => Order::whereDate('created_at', $today)->count(),
             'total_revenue_today' => Order::whereDate('created_at', $today)
@@ -21,6 +30,9 @@ class DashboardController extends Controller
                 ->sum('total_amount'),
             'pending_orders' => Order::where('order_status', 'pending_payment')->count(),
             'need_processing' => Order::where('order_status', 'paid')->count(),
+            'recovery_rate' => $totalPendingEver > 0
+                ? round(($recoveredOrders / $totalPendingEver) * 100, 1)
+                : 0,
         ];
 
         $recentOrders = Order::with(['product', 'landingPage'])

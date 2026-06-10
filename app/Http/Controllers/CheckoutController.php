@@ -72,4 +72,13 @@ class CheckoutController extends Controller
     {
         return view('checkout.pending');
     }
+
+    public function cod(string $orderNumber)
+    {
+        $order = Order::with(['product', 'landingPage'])
+            ->where('order_number', $orderNumber)
+            ->firstOrFail();
+
+        return view('checkout.cod', compact('order'));
+    }
 }

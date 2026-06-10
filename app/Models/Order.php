@@ -23,6 +23,7 @@ class Order extends Model
         'shipping_cost',
         'total_amount',
         'payment_method',
+        'is_cod',
         'payment_status',
         'order_status',
         'midtrans_order_id',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campaign;
 use App\Models\LandingPage;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -78,6 +79,56 @@ class AnalyticsController extends Controller
         $dailyOrders = $this->getLpDailyOrders($landingPage->id, $dateFrom, $dateTo);
 
         return view('admin.analytics.lp-detail', compact('landingPage', 'orders', 'stats', 'dateFrom', 'dateTo', 'dailyOrders'));
+    }
+
+    public function campaigns(Request $request)
+    {
+        $dateFrom = $request->date_from ?: now()->subDays(30)->format('Y-m-d');
+        $dateTo = $request->date_to ?: now()->format('Y-m-d');
+
+        $campaigns = Campaign::get();
+        $data = [];
+
+        foreach ($campaigns as $campaign) {
+            $orders = Order::whereBetween('created_at', [$dateFrom, $dateTo . ' 23:59:59'])
+                ->where(function ($q) use ($campaign) {
+                    if ($campaign->utm_campaign) $q->where('utm_campaign', $campaign->utm_campaign);
+                    if ($campaign->utm_source) $q->where('utm_source', $campaign->utm_source);
+                    if ($campaign->utm_medium) $q->where('utm_medium', $campaign->utm_medium);
+                });
+
+            $totalOrders = (clone $orders)->count();
+            $paidOrders = (clone $orders)->where('payment_status', 'paid')->count();
+            $totalRevenue = (clone $orders)->where('payment_status', 'paid')->sum('total_amount');
+            $adSpend = $campaign->ad_spend;
+            $roas = $adSpend > 0 ? round($totalRevenue / $adSpend, 2) : 0;
+            $profit = $totalRevenue - $adSpend;
+
+            $data[] = [
+                'campaign' => $campaign,
+                'total_orders' => $totalOrders,
+                'paid_orders' => $paidOrders,
+                'total_revenue' => $totalRevenue,
+                'ad_spend' => $adSpend,
+                'roas' => $roas,
+                'profit' => $profit,
+            ];
+        }
+
+        usort($data, fn ($a, $b) => $b['total_revenue'] <=> $a['total_revenue']);
+
+        $totals = [
+            'ad_spend' => array_sum(array_column($data, 'ad_spend')),
+            'total_revenue' => array_sum(array_column($data, 'total_revenue')),
+            'total_orders' => array_sum(array_column($data, 'total_orders')),
+            'paid_orders' => array_sum(array_column($data, 'paid_orders')),
+            'profit' => array_sum(array_column($data, 'profit')),
+            'roas' => array_sum(array_column($data, 'ad_spend')) > 0
+                ? round(array_sum(array_column($data, 'total_revenue')) / array_sum(array_column($data, 'ad_spend')), 2)
+                : 0,
+        ];
+
+        return view('admin.analytics.campaigns', compact('data', 'totals', 'dateFrom', 'dateTo'));
     }
 
     protected function getDailyOrders(string $from, string $to): array

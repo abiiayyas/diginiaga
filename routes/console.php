@@ -12,3 +12,7 @@ Schedule::command('shipments:sync-tracking')->everyTwoHours()
     ->withoutOverlapping()
     ->runInBackground();
 
+Schedule::command('orders:send-payment-reminders')->everyThreeHours()
+    ->withoutOverlapping()
+    ->runInBackground();
+
