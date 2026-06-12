@@ -60,6 +60,7 @@ Route::get('/p/{slug}', [LPController::class, 'show'])->name('lp.show');
 Route::post('/lp/create-order', [LPController::class, 'createOrder'])->name('lp.order.create');
 Route::get('/lp/shipping-options', [LPController::class, 'getShippingOptions'])->name('lp.shipping');
 
+Route::get('/checkout/form/{slug}', [CheckoutController::class, 'showForm'])->name('checkout.form');
 Route::get('/checkout/{order}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/checkout/finish', [CheckoutController::class, 'finish'])->name('checkout.finish');
 Route::get('/checkout/error', [CheckoutController::class, 'error'])->name('checkout.error');

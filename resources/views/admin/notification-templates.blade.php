@@ -1,64 +1,17 @@
 @extends('layouts.admin')
 
-@section('title', 'Template Notifikasi WhatsApp')
+@section('title', 'Notifikasi')
 
 @section('content')
-<h2 class="text-xl font-semibold mb-6">Template Notifikasi WhatsApp</h2>
+<div class="max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Template Notifikasi WhatsApp</h1>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <p class="text-sm text-gray-500 mb-6">Template pesan WA otomatis. Gunakan <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">@{{variable}}</code> untuk data dinamis.</p>
 
-<div class="bg-white rounded-lg shadow p-6 max-w-2xl">
-    <p class="text-sm text-gray-500 mb-4">Template pesan WhatsApp yang dikirim otomatis. Gunakan placeholder <code>{<!-- -->{variable}}</code> untuk data dinamis.</p>
-
-    <form action="#" method="POST">
-        @csrf
-        <div class="mb-6">
-            <h3 class="font-medium mb-2">Order Dibuat</h3>
-            <textarea rows="6" class="w-full rounded-lg border-gray-300 text-sm font-mono" readonly>Halo {{'{{customer_name}}'}}!
-
-Order kamu #{{'{{order_number}}'}} sudah kami terima.
-
-📦 {{'{{product_name}}'}}
-💰 Total: Rp {{'{{total_amount}}'}}
-
-Silakan selesaikan pembayaran melalui:
-{{'{{payment_url}}'}}
-
-Terima kasih!</textarea>
-        </div>
-
-        <div class="mb-6">
-            <h3 class="font-medium mb-2">Pembayaran Dikonfirmasi</h3>
-            <textarea rows="6" class="w-full rounded-lg border-gray-300 text-sm font-mono" readonly>Halo {{'{{customer_name}}'}}!
-
-Pembayaran untuk order #{{'{{order_number}}'}} sudah diterima ✅
-Order kamu sedang diproses.
-
-Kami akan kirim nomor resi setelah pengiriman.
-
-Terima kasih!</textarea>
-        </div>
-
-        <div class="mb-6">
-            <h3 class="font-medium mb-2">Resi Tergenerate</h3>
-            <textarea rows="8" class="w-full rounded-lg border-gray-300 text-sm font-mono" readonly>Halo {{'{{customer_name}}'}}!
-
-Order #{{'{{order_number}}'}} sudah dikirim! 📦
-
-Kurir: {{'{{courier_name}}'}}
-No. Resi: {{'{{tracking_number}}'}}
-
-Cek status:
-{{'{{tracking_url}}'}}
-
-Terima kasih!</textarea>
-        </div>
-
-        <div class="mb-6">
-            <h3 class="font-medium mb-2">Terkirim (Delivered)</h3>
-            <textarea rows="5" class="w-full rounded-lg border-gray-300 text-sm font-mono" readonly>Halo {{'{{customer_name}}'}}!
-
-Order #{{'{{order_number}}'}} sudah sampai 🎉
-
-Terima kasih sudah berbelanja! Jika ada pertanyaan, hubungi kami.</textarea>
-        </div>
-    </form>
+        <div class="mb-6"><h3 class="text-sm font-semibold text-gray-900 mb-2">Order Dibuat</h3><textarea rows="6" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm font-mono bg-gray-50" readonly>Halo @{{customer_name}}! Order #@{{order_number}} sudah diterima. 📦 @{{product_name}} 💰 Rp @{{total_amount}} ➡️ Bayar: @{{payment_url}}</textarea></div>
+        <div class="mb-6"><h3 class="text-sm font-semibold text-gray-900 mb-2">Pembayaran Dikonfirmasi</h3><textarea rows="6" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm font-mono bg-gray-50" readonly>Halo @{{customer_name}}! Pembayaran #@{{order_number}} diterima ✅ Order diproses. Resi menyusul.</textarea></div>
+        <div class="mb-6"><h3 class="text-sm font-semibold text-gray-900 mb-2">Resi Tergenerate</h3><textarea rows="8" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm font-mono bg-gray-50" readonly>Halo @{{customer_name}}! Order #@{{order_number}} dikirim 📦 Kurir: @{{courier_name}} Resi: @{{tracking_number}} Track: @{{tracking_url}}</textarea></div>
+        <div class="mb-6"><h3 class="text-sm font-semibold text-gray-900 mb-2">Terkirim</h3><textarea rows="5" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm font-mono bg-gray-50" readonly>Halo @{{customer_name}}! Order #@{{order_number}} sudah sampai 🎉 Terima kasih!</textarea></div>
+    </div>
 </div>
+@endsection

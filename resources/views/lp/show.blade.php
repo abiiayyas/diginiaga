@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>{{ $landingPage->headline ?: $landingPage->product->name }}</title>
     <meta name="description" content="{{ $landingPage->subheadline ?: $landingPage->product->description }}">
 
@@ -23,132 +23,270 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #1f2937; }
-        .container { max-width: 640px; margin: 0 auto; padding: 0 20px; }
-        .hero { padding: 60px 0 40px; text-align: center; }
-        .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 16px; line-height: 1.2; }
-        .hero p { font-size: 1.1rem; color: #6b7280; margin-bottom: 32px; }
-        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 40px; }
-        .feature { padding: 20px; border-radius: 12px; text-align: center; }
-        .feature .icon { font-size: 2rem; margin-bottom: 8px; }
-        .feature .title { font-weight: 600; font-size: 0.9rem; }
-        .price-box { background: #f9fafb; border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 40px; }
-        .price-box .original { text-decoration: line-through; color: #9ca3af; font-size: 1.1rem; }
-        .price-box .current { font-size: 2.5rem; font-weight: 800; color: #059669; }
-        .form-section { padding-bottom: 60px; }
-        .form-section h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; text-align: center; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 4px; color: #374151; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-submit { width: 100%; padding: 16px; font-size: 1rem; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; color: white; transition: opacity 0.2s; }
-        .btn-submit:hover { opacity: 0.9; }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-        .shipping-options { margin-top: 8px; padding: 12px; background: #f9fafb; border-radius: 8px; }
-        .shipping-option { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .shipping-option:hover { border-color: #2563eb; background: #eff6ff; }
-        .shipping-option.selected { border-color: #2563eb; background: #eff6ff; }
-        .shipping-option:last-child { margin-bottom: 0; }
-        .total-display { margin-top: 20px; padding: 20px; background: #f0fdf4; border-radius: 12px; }
-        .total-display .label { font-size: 0.875rem; color: #059669; }
-        .total-display .amount { font-size: 1.5rem; font-weight: 800; color: #059669; }
-        .footer { text-align: center; padding: 24px; color: #9ca3af; font-size: 0.8rem; }
-        .error { color: #dc2626; font-size: 0.8rem; margin-top: 4px; }
-        .loading { text-align: center; padding: 20px; color: #6b7280; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Floating Header Transition */
+        #top-header { transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+        #top-header.scrolled { background-color: rgba(255, 255, 255, 0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.1); backdrop-filter: blur(8px); }
+        #top-header.scrolled .header-icon { background-color: transparent; color: #374151; }
+
+        /* Animations */
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes arrowBounceDown { 0%,100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(12px); opacity: 0.6; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .anim-arrow { position: fixed; z-index: 9999; pointer-events: none; font-size: 2rem; display: none; }
+        .anim-arrow.down { animation: arrowBounceDown 1s ease infinite; }
+        .anim-pulse { animation: pulse 1.5s ease infinite; }
+        .anim-bounce { animation: bounce 1s ease infinite; }
+        .anim-shake { animation: shake 0.5s ease infinite; }
+        .anim-fadein { animation: fadeInUp 0.6s ease forwards; opacity: 0; }
+        
+        /* Embed Wrapper */
+        .embed-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+        .embed-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        /* Hide Alpine Cloak */
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="hero">
-            <h1>{{ $landingPage->headline ?: $landingPage->product->name }}</h1>
-            <p>{{ $landingPage->subheadline ?: $landingPage->product->description }}</p>
+<body class="text-gray-800 antialiased">
+    <div class="max-w-md mx-auto bg-gray-100 min-h-screen relative shadow-2xl overflow-x-hidden pb-[80px]">
+
+        {{-- Floating Header --}}
+        <header id="top-header" class="fixed top-0 max-w-md w-full z-50 flex items-center justify-between px-4 py-3">
+            <button onclick="window.history.back()" class="header-icon w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white transition-colors">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 11.25H4.78l5.73-5.72a.77.77 0 0 0 0-1.07.75.75 0 0 0-1.06 0l-7.1 7.1a.77.77 0 0 0 0 1.07l7.1 7.1a.75.75 0 0 0 1.06 0 .77.77 0 0 0 0-1.07l-5.92-5.91H20a.75.75 0 1 0 0-1.5Z"></path></svg>
+            </button>
+            <div class="flex items-center gap-3">
+                <button class="header-icon w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white transition-colors" onclick="alert('Bagikan link disalin!'); navigator.clipboard.writeText(window.location.href);">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3.092 19.78a1 1 0 0 0 .78-.57c2.36-3.81 6.57-4.82 9.95-5v2.45a1.33 1.33 0 0 0 .8 1.22 1.25 1.25 0 0 0 1.37-.28l5.1-5a2.25 2.25 0 0 0 0-3.18l-5.05-5a1.25 1.25 0 0 0-1.38-.28 1.29 1.29 0 0 0-.79 1.2v2.43c-6.78.32-11.53 4.94-11.53 11.23a.8.8 0 0 0 .55.75l.2.03Zm11.5-7.03c-3.24 0-7.44.69-10.42 3.7 1.14-4.29 5.18-7.2 10.42-7.2a.76.76 0 0 0 .75-.75V5.82l4.66 4.66a.75.75 0 0 1 0 1.06l-4.66 4.66v-2.7a.76.76 0 0 0-.75-.75Z"></path></svg>
+                </button>
+                <button class="header-icon w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white transition-colors">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21.68 7.56a1.908 1.908 0 0 0-.35-.66 1.71 1.71 0 0 0-.58-.46 1.85 1.85 0 0 0-.75-.19H6.17a1.82 1.82 0 0 0-.57.13l-.06-.3a1.91 1.91 0 0 0-2-1.83h-1a.75.75 0 0 0 0 1.5h1c.42 0 .49.07.57.59l1.09 5.54.54 2.78A3.86 3.86 0 0 0 7 16.89a3.76 3.76 0 0 0 1.54.75A2 2 0 0 0 8 19a2 2 0 0 0 4 0 2 2 0 0 0-.46-1.25h2.88a2 2 0 1 0 3.06-.12 3.8 3.8 0 0 0 1.46-.7 3.71 3.71 0 0 0 1.32-2.1l1.47-6.46V8.3a1.68 1.68 0 0 0-.05-.74Z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        {{-- Hero Gallery Slider --}}
+        @php
+            $images = count($landingPage->parsed_slider_images) ? $landingPage->parsed_slider_images : ($landingPage->cover_image ? [asset('storage/' . $landingPage->cover_image)] : []);
+        @endphp
+        <div class="bg-white relative w-full aspect-square overflow-hidden" id="hero-slider">
+            @if(count($images))
+            <div class="flex w-full h-full transition-transform duration-300" id="hero-slider-track">
+                @foreach($images as $img)
+                <img src="{{ $img }}" class="w-full h-full object-cover flex-shrink-0" alt="Product Image">
+                @endforeach
+            </div>
+            @if(count($images) > 1)
+            <div class="absolute bottom-4 right-4 bg-black/40 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm" id="slider-counter">
+                1 / {{ count($images) }}
+            </div>
+            @endif
+            @else
+            <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">Tanpa Gambar</div>
+            @endif
         </div>
 
-        @if($landingPage->body_content)
-        <div class="features">
-            @foreach(explode("\n", trim($landingPage->body_content)) as $line)
-                @if(trim($line))
-                <div class="feature">
-                    <div class="icon">✅</div>
-                    <div class="title">{{ trim($line) }}</div>
+        {{-- Promo / Flash Sale Banner --}}
+        <div class="bg-gradient-to-r from-red-600 to-orange-500 flex justify-between items-center px-4 py-3 text-white">
+            <div class="flex items-center gap-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                <span class="font-bold text-sm italic tracking-wide">FLASH SALE</span>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] font-medium opacity-90 leading-tight">Berakhir dalam</span>
+                <div class="flex items-center gap-1 font-bold text-sm" id="countdown-timer">
+                    <div class="bg-black/20 px-1.5 py-0.5 rounded" id="cd-h">00</div><span class="text-[10px]">:</span>
+                    <div class="bg-black/20 px-1.5 py-0.5 rounded" id="cd-m">00</div><span class="text-[10px]">:</span>
+                    <div class="bg-black/20 px-1.5 py-0.5 rounded" id="cd-s">00</div>
                 </div>
-                @endif
-            @endforeach
+            </div>
+        </div>
+
+        @php
+            $price = $landingPage->product->sell_price;
+            $fakeOriginalPrice = $price * 1.5;
+            $discountPercent = 33;
+            $rating = 4.9;
+            $soldCount = 1245 + $landingPage->orders_count;
+        @endphp
+
+        {{-- Price & Title Section --}}
+        <div class="bg-white p-4 mb-2">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <div class="text-2xl font-black text-red-600">Rp{{ number_format($price, 0, ',', '.') }}</div>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs text-gray-400 line-through">Rp{{ number_format($fakeOriginalPrice, 0, ',', '.') }}</span>
+                        <span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">{{ $discountPercent }}% OFF</span>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">{{ number_format($soldCount, 0, ',', '.') }} Terjual</div>
+            </div>
+            <h1 class="text-[15px] font-semibold text-gray-900 leading-snug mb-3">
+                {{ $landingPage->headline ?: $landingPage->product->name }}
+            </h1>
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+                <div class="flex items-center text-yellow-500">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+                    <span class="ml-1 text-gray-700 font-medium">{{ $rating }}</span>
+                </div>
+                <div class="w-[1px] h-3 bg-gray-300"></div>
+                <span>99+ Ulasan</span>
+                <div class="w-[1px] h-3 bg-gray-300"></div>
+                <span>Diskusi (12)</span>
+            </div>
+            @if($landingPage->subheadline)
+            <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-gray-100">{{ $landingPage->subheadline }}</p>
+            @endif
+        </div>
+
+        {{-- Store Section --}}
+        <div class="bg-white p-4 mb-2 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="#9ca3af"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"></path></svg>
+                </div>
+                <div>
+                    <div class="font-bold text-sm text-gray-900 flex items-center gap-1">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="#10b981"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm-2 14l-4-4 1.41-1.41L10 13.17l6.59-6.59L18 8l-8 8z"></path></svg>
+                        Toko Resmi
+                    </div>
+                    <div class="text-[11px] text-gray-500">Aktif 5 menit lalu &bull; Jakarta</div>
+                </div>
+            </div>
+            <button class="border border-green-500 text-green-600 px-3 py-1 rounded text-xs font-semibold">Ikuti</button>
+        </div>
+
+        {{-- Benefits Grid / Body Content --}}
+        @if(count($landingPage->parsed_features))
+        <div class="bg-white p-4 mb-2 anim-fadein">
+            <h2 class="font-bold text-[15px] mb-3">Keunggulan</h2>
+            <div class="grid grid-cols-2 gap-3">
+                @foreach($landingPage->parsed_features as $feature)
+                <div class="flex items-start gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="#10b981" class="flex-shrink-0 mt-0.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+                    <span class="text-xs text-gray-700 leading-snug">{{ $feature }}</span>
+                </div>
+                @endforeach
+            </div>
         </div>
         @endif
 
-        <div class="price-box">
-            <div class="current">Rp {{ number_format($landingPage->product->sell_price, 0, ',', '.') }}</div>
+        {{-- Detail Deskripsi --}}
+        <div class="bg-white p-4 mb-2">
+            <h2 class="font-bold text-[15px] mb-3">Detail Produk</h2>
+            
+            @if(count($landingPage->parsed_list_items))
+            <ul class="mb-4 space-y-2">
+                @foreach($landingPage->parsed_list_items as $item)
+                <li class="flex gap-2 text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
+                    <span class="text-gray-400 font-bold">&bull;</span>
+                    <span>{{ $item }}</span>
+                </li>
+                @endforeach
+            </ul>
+            @endif
+
+            @if($landingPage->embed_code)
+            <div class="rounded-xl overflow-hidden mb-4 border border-gray-100">
+                <div class="embed-wrapper">
+                    @php
+                    $code = $landingPage->embed_code;
+                    if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $code, $m)) {
+                        $code = '<iframe src="https://www.youtube.com/embed/' . $m[1] . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                    }
+                    @endphp
+                    {!! $code !!}
+                </div>
+            </div>
+            @endif
         </div>
 
-        <div class="form-section">
-            <h2>Isi Form Pemesanan</h2>
-            <form id="order-form" method="POST" action="{{ route('lp.order.create') }}">
-                @csrf
-                <input type="hidden" name="landing_page_id" value="{{ $landingPage->id }}">
-                <input type="hidden" name="shipping_cost" value="0">
-
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="customer_name" required placeholder="Nama lengkap Anda">
-                </div>
-                <div class="form-group">
-                    <label>Nomor WhatsApp</label>
-                    <input type="tel" name="customer_phone" required placeholder="0812xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>Alamat Lengkap</label>
-                    <textarea name="customer_address" rows="2" required placeholder="Jalan, nomor rumah, RT/RW, kelurahan"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Kota</label>
-                        <input type="text" name="customer_city" required placeholder="Kota/Kabupaten">
+        {{-- Testimonials --}}
+        @if(count($landingPage->parsed_testimonials))
+        <div class="bg-white p-4 mb-2 anim-fadein">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-[15px]">Penilaian Pembeli</h2>
+                <a href="#" class="text-xs text-red-600 flex items-center">Lihat Semua <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg></a>
+            </div>
+            <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                @foreach($landingPage->parsed_testimonials as $t)
+                <div class="bg-gray-50 border border-gray-100 rounded-lg p-3 w-[240px] flex-shrink-0">
+                    <div class="flex text-yellow-500 mb-1">
+                        @for($i=0; $i<5; $i++) <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"></path></svg> @endfor
                     </div>
-                    <div class="form-group">
-                        <label>Provinsi</label>
-                        <input type="text" name="customer_province" required placeholder="Provinsi">
-                    </div>
+                    <div class="text-[11px] text-gray-500 mb-2 font-medium">{{ $t['name'] }} <span class="text-gray-300 mx-1">|</span> {{ $t['role'] }}</div>
+                    <div class="text-xs text-gray-700 leading-relaxed line-clamp-3">"{{ $t['quote'] }}"</div>
                 </div>
-                <div class="form-group">
-                    <label>Kode Pos</label>
-                    <input type="text" name="customer_postal_code" required placeholder="12345">
-                </div>
-                <div class="form-group">
-                    <label>Pilih Kurir</label>
-                    <select name="shipping_courier" id="courier-select" required onchange="loadShippingOptions()">
-                        <option value="">Pilih kurir...</option>
-                    </select>
-                    <div id="shipping-options" class="shipping-options" style="display:none"></div>
-                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
-                <div class="form-group" style="margin-top: 12px">
-                    <label style="display: flex; align-items: center; cursor: pointer">
-                        <input type="checkbox" name="is_cod" value="1" id="cod-checkbox" onchange="toggleCod()" style="width: auto; margin-right: 8px;">
-                        <span>COD (Bayar di Tempat)</span>
-                    </label>
-                    <small id="cod-note" style="display: none; color: #92400e">Order akan diproses tanpa pembayaran di muka. Bayar saat paket diterima.</small>
-                </div>
-
-                <div class="total-display" id="total-display">
-                    <div class="label">Total Pembayaran</div>
-                    <div class="amount" id="total-amount">Rp {{ number_format($landingPage->product->sell_price, 0, ',', '.') }}</div>
-                </div>
-
-                <div style="margin-top: 16px">
-                    <button type="submit" class="btn-submit" style="background-color: {{ $landingPage->cta_color }}"
-                        onclick="trackCheckout()">
-                        {{ $landingPage->cta_text ?: 'Pesan Sekarang' }}
+        {{-- FAQ --}}
+        @if(count($landingPage->parsed_faqs))
+        <div class="bg-white p-4 mb-2 anim-fadein">
+            <h2 class="font-bold text-[15px] mb-3">FAQ (Tanya Jawab)</h2>
+            <div class="space-y-2">
+                @foreach($landingPage->parsed_faqs as $i => $faq)
+                <div class="border-b border-gray-100 last:border-0 pb-2 faq-item {{ $i === 0 ? 'open' : '' }}">
+                    <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none" onclick="this.parentElement.classList.toggle('open')">
+                        <span class="text-sm font-semibold text-gray-800 pr-4">{{ $faq['q'] }}</span>
+                        <svg class="arrow transform transition-transform text-gray-400 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>
                     </button>
+                    <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 ease-in-out text-xs text-gray-600">
+                        <div class="pb-2 pt-1">{{ $faq['a'] }}</div>
+                    </div>
                 </div>
-            </form>
+                @endforeach
+            </div>
+            <style>
+                .faq-item.open .arrow { transform: rotate(180deg); }
+                .faq-item.open .faq-answer { max-height: 300px; }
+            </style>
+        </div>
+        @endif
+
+        {{-- Extra spacing at the bottom --}}
+        <div class="bg-white p-4 text-center text-[10px] text-gray-400 pb-10">
+            &copy; {{ date('Y') }} {{ config('app.name') }}
         </div>
 
-        <div class="footer">
-            &copy; {{ date('Y') }} {{ config('app.name') }}
+        {{-- Fixed Bottom Bar --}}
+        <div class="fixed bottom-0 max-w-md w-full bg-white border-t border-gray-200 px-3 py-2 flex items-center gap-2 z-50">
+            {{-- Secondary/Chat Action --}}
+            @if($landingPage->button_url)
+            <a href="{{ $landingPage->button_url }}" target="_blank" rel="noopener" class="flex flex-col items-center justify-center w-12 flex-shrink-0 text-[#10b981] hover:bg-green-50 rounded-lg py-1 transition-colors">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.83 3.08 1.27 4.79 1.27 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.46 14.15c-.23.65-1.33 1.25-1.84 1.34-.48.09-1.12.15-3.32-.76-2.66-1.1-4.38-3.83-4.51-4.01-.14-.18-1.08-1.44-1.08-2.75 0-1.31.68-1.96.93-2.24.25-.28.54-.35.73-.35.18 0 .36 0 .52.01.17.01.39-.06.6.45.22.54.73 1.8.8 1.94.07.15.11.32.02.5-.09.18-.14.3-.27.45-.14.14-.29.31-.41.43-.14.14-.29.29-.13.56.16.27.7 1.15 1.5 1.87.97.87 1.83 1.14 2.1 1.28.27.14.43.12.59-.06.16-.18.68-.8.87-1.07.18-.27.37-.23.62-.13.25.1 1.62.77 1.9 1.05.28.27.47.43.54.67.07.24.07 1.38-.16 2.03z"></path></svg>
+                <span class="text-[9px] font-medium mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">{{ $landingPage->button_text ?: 'Chat' }}</span>
+            </a>
+            @else
+            <div class="flex flex-col items-center justify-center w-12 flex-shrink-0 text-gray-400">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+                <span class="text-[9px] font-medium mt-0.5">Chat</span>
+            </div>
+            @endif
+
+            <div class="w-px h-8 bg-gray-200"></div>
+
+            {{-- Buy Now CTA --}}
+            <a id="cta-btn" href="{{ route('checkout.form', ['slug' => $landingPage->slug]) }}@if(isset($utmQuery) && $utmQuery)?{{ $utmQuery }}@endif"
+               class="flex-1 flex justify-center items-center rounded-lg text-white font-bold text-sm h-10 hover:opacity-90 transition-opacity shadow-sm"
+               style="background-color: {{ $landingPage->cta_color }}">
+                {{ $landingPage->cta_text ?: 'Beli Sekarang' }}
+            </a>
         </div>
     </div>
 
@@ -157,88 +295,82 @@
         src="https://www.facebook.com/tr?id={{ $landingPage->pixel_id }}&ev=PageView&noscript=1"/></noscript>
     @endif
 
+    {{-- Script Helpers --}}
     <script>
-    const productPrice = {{ $landingPage->product->sell_price }};
-    const pixelId = '{{ $landingPage->pixel_id }}';
-    let selectedShippingCost = 0;
-    let selectedCourier = '';
-
-    async function loadCouriers() {
-        const select = document.getElementById('courier-select');
-        try {
-            const res = await fetch('/lp/shipping-options?destination_city=default');
-            const data = await res.json();
-            data.couriers.forEach(courier => {
-                const option = document.createElement('option');
-                option.value = courier.code;
-                option.textContent = courier.name;
-                select.appendChild(option);
-            });
-        } catch(e) {
-            select.innerHTML = '<option value="jne">JNE</option><option value="jnt">J&T Express</option><option value="sicepat">SiCepat</option>';
-        }
-    }
-
-    async function loadShippingOptions() {
-        const courier = document.getElementById('courier-select').value;
-        const container = document.getElementById('shipping-options');
-        if (!courier) { container.style.display = 'none'; return; }
-
-        container.innerHTML = '<div class="loading">Memuat ongkir...</div>';
-        container.style.display = 'block';
-
-        try {
-            const res = await fetch('/lp/shipping-options?destination_city=default');
-            const data = await res.json();
-            const courierData = data.couriers.find(c => c.code === courier);
-            if (courierData) {
-                container.innerHTML = courierData.services.map((s, i) => `
-                    <div class="shipping-option" onclick="selectShipping(this, '${courierData.name}', '${s.name}', ${s.cost}, '${s.etd}')">
-                        <div>
-                            <strong>${s.name}</strong> (${s.description})
-                            <br><small style="color:#6b7280">Estimasi ${s.etd}</small>
-                        </div>
-                        <div style="font-weight:600">Rp ${s.cost.toLocaleString('id-ID')}</div>
-                    </div>
-                `).join('');
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Header Scroll Effect
+        const header = document.getElementById('top-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
             }
-        } catch(e) {
-            container.innerHTML = `
-                <div class="shipping-option" onclick="selectShipping(this, '${courier.toUpperCase()}', 'REG', 9000, '2-3 hari')">
-                    <div><strong>Reguler</strong><br><small style="color:#6b7280">Estimasi 2-3 hari</small></div>
-                    <div style="font-weight:600">Rp 9.000</div>
-                </div>
-            `;
+        });
+
+        // 2. Slider Logic
+        const track = document.getElementById('hero-slider-track');
+        if (track) {
+            const count = track.children.length;
+            if (count > 1) {
+                let idx = 0;
+                const counter = document.getElementById('slider-counter');
+                setInterval(() => {
+                    idx = (idx + 1) % count;
+                    track.style.transform = `translateX(-${idx * 100}%)`;
+                    counter.innerText = `${idx + 1} / ${count}`;
+                }, 3000);
+            }
         }
-    }
 
-    function selectShipping(el, courierName, service, cost, etd) {
-        document.querySelectorAll('.shipping-option').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedShippingCost = cost;
-        selectedCourier = courierName;
-        document.querySelector('input[name="shipping_cost"]').value = cost;
-        updateTotal();
-    }
-
-    function updateTotal() {
-        const total = productPrice + selectedShippingCost;
-        document.getElementById('total-amount').textContent = 'Rp ' + total.toLocaleString('id-ID');
-    }
-
-    function toggleCod() {
-        const codNote = document.getElementById('cod-note');
-        const isChecked = document.getElementById('cod-checkbox').checked;
-        codNote.style.display = isChecked ? 'block' : 'none';
-    }
-
-    function trackCheckout() {
-        if (pixelId) {
-            fbq('track', 'InitiateCheckout');
+        // 3. Fake Countdown Timer (Ends at midnight today)
+        function updateCountdown() {
+            const now = new Date();
+            const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+            const diff = endOfDay - now;
+            
+            if (diff <= 0) return;
+            
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('cd-h').innerText = h.toString().padStart(2, '0');
+            document.getElementById('cd-m').innerText = m.toString().padStart(2, '0');
+            document.getElementById('cd-s').innerText = s.toString().padStart(2, '0');
         }
-    }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
 
-    loadCouriers();
+        // 4. Custom Animations handling
+        const configs = @json($landingPage->parsed_animations ?: []);
+        configs.forEach(c => {
+            setTimeout(() => {
+                const targetId = c.target;
+                const el = document.querySelector(targetId);
+                if(!el) return;
+                
+                if(c.type === 'arrow'){
+                    const arr = document.createElement('div');
+                    arr.className = 'anim-arrow ' + (c.direction || 'down');
+                    arr.innerText = '⬇️';
+                    const rect = el.getBoundingClientRect();
+                    arr.style.top = (rect.top - 40) + 'px'; 
+                    arr.style.left = (rect.left + rect.width/2 - 16) + 'px';
+                    arr.style.display = 'block';
+                    document.body.appendChild(arr);
+                    setTimeout(() => arr.remove(), 5000);
+                } else if(c.type === 'fadein'){
+                    document.querySelectorAll('.anim-fadein').forEach((s, i) => {
+                        s.style.animationDelay = (i * 0.1) + 's';
+                    });
+                } else {
+                    el.classList.add('anim-' + c.type);
+                    setTimeout(() => el.classList.remove('anim-' + c.type), 5000);
+                }
+            }, c.delay || 0);
+        });
+    });
     </script>
 </body>
 </html>

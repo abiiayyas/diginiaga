@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LandingPage;
 use App\Models\Order;
 use App\Services\MidtransService;
 use App\Services\WhatsAppService;
@@ -16,6 +17,25 @@ class CheckoutController extends Controller
     {
         $this->midtrans = $midtrans;
         $this->whatsapp = $whatsapp;
+    }
+
+    public function showForm(Request $request, string $slug)
+    {
+        $landingPage = LandingPage::with('product')
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $utmParams = [
+            'utm_source' => $request->query('utm_source'),
+            'utm_medium' => $request->query('utm_medium'),
+            'utm_campaign' => $request->query('utm_campaign'),
+            'utm_content' => $request->query('utm_content'),
+        ];
+
+        $utmQuery = http_build_query(array_filter($utmParams));
+
+        return view('checkout.form', compact('landingPage', 'utmQuery'));
     }
 
     public function payment(string $orderNumber)

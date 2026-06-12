@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LandingPage;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LandingPageController extends Controller
 {
@@ -33,13 +34,44 @@ class LandingPageController extends Controller
             'headline' => 'nullable|string|max:255',
             'subheadline' => 'nullable|string|max:255',
             'body_content' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            'list_items' => 'nullable|string',
+            'faq_items' => 'nullable|string',
+            'testimonials' => 'nullable|string',
+            'slider_images' => 'nullable|array',
+            'slider_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            'embed_code' => 'nullable|string',
             'cta_text' => 'nullable|string|max:100',
             'cta_color' => 'nullable|string|max:20',
+            'button_text' => 'nullable|string|max:100',
+            'button_url' => 'nullable|string|max:500',
+            'button_color' => 'nullable|string|max:20',
+            'scroll_target' => 'nullable|string|max:100',
             'pixel_id' => 'nullable|string|max:100',
             'domain' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'variant_name' => 'nullable|string|max:255',
         ]);
+
+        if ($request->hasFile('cover_image')) {
+            $validated['cover_image'] = $request->file('cover_image')->store('landing-pages', 'public');
+        }
+
+        if ($request->hasFile('slider_images')) {
+            $paths = [];
+            foreach ($request->file('slider_images') as $file) {
+                $paths[] = $file->store('landing-pages/slider', 'public');
+            }
+            $validated['image_slider'] = json_encode($paths);
+        } else {
+            $validated['image_slider'] = null;
+        }
+
+        $validated['faq_items'] = $this->buildFaqJson($request);
+        $validated['animation_config'] = $this->buildAnimationJson($request);
+
+        $validated['cta_text'] = $validated['cta_text'] ?? 'Pesan Sekarang';
+        $validated['cta_color'] = $validated['cta_color'] ?? '#2563eb';
 
         LandingPage::create($validated);
 
@@ -50,7 +82,40 @@ class LandingPageController extends Controller
     public function edit(LandingPage $landingPage)
     {
         $products = Product::where('is_active', true)->get();
-        return view('admin.landing-pages.edit', compact('landingPage', 'products'));
+
+        $existingFaqs = [];
+        if ($landingPage->faq_items) {
+            $decoded = json_decode($landingPage->faq_items, true);
+            if (is_array($decoded)) {
+                $existingFaqs = $decoded;
+            } else {
+                foreach (array_filter(explode("\n", $landingPage->faq_items)) as $line) {
+                    $parts = explode('|', $line, 2);
+                    if (count($parts) === 2) {
+                        $existingFaqs[] = ['q' => trim($parts[0]), 'a' => trim($parts[1])];
+                    }
+                }
+            }
+        }
+
+        $existingSliderImages = [];
+        if ($landingPage->image_slider) {
+            $decoded = json_decode($landingPage->image_slider, true);
+            if (is_array($decoded)) {
+                $existingSliderImages = $decoded;
+            } else {
+                $existingSliderImages = array_filter(array_map('trim', explode("\n", $landingPage->image_slider)));
+            }
+        }
+
+        $animConfig = [];
+        if ($landingPage->animation_config) {
+            $animConfig = json_decode($landingPage->animation_config, true) ?: [];
+        }
+
+        return view('admin.landing-pages.edit', compact(
+            'landingPage', 'products', 'existingFaqs', 'existingSliderImages', 'animConfig'
+        ));
     }
 
     public function update(Request $request, LandingPage $landingPage)
@@ -61,13 +126,65 @@ class LandingPageController extends Controller
             'headline' => 'nullable|string|max:255',
             'subheadline' => 'nullable|string|max:255',
             'body_content' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            'list_items' => 'nullable|string',
+            'faq_items' => 'nullable|string',
+            'testimonials' => 'nullable|string',
+            'slider_images' => 'nullable|array',
+            'slider_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+            'embed_code' => 'nullable|string',
             'cta_text' => 'nullable|string|max:100',
             'cta_color' => 'nullable|string|max:20',
+            'button_text' => 'nullable|string|max:100',
+            'button_url' => 'nullable|string|max:500',
+            'button_color' => 'nullable|string|max:20',
+            'scroll_target' => 'nullable|string|max:100',
             'pixel_id' => 'nullable|string|max:100',
             'domain' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'variant_name' => 'nullable|string|max:255',
         ]);
+
+        if ($request->hasFile('cover_image')) {
+            if ($landingPage->cover_image) {
+                Storage::disk('public')->delete($landingPage->cover_image);
+            }
+            $validated['cover_image'] = $request->file('cover_image')->store('landing-pages', 'public');
+        }
+
+        if ($request->hasFile('slider_images')) {
+            if ($landingPage->image_slider) {
+                $old = json_decode($landingPage->image_slider, true);
+                if (is_array($old)) {
+                    foreach ($old as $oldPath) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+            }
+            $paths = [];
+            foreach ($request->file('slider_images') as $file) {
+                $paths[] = $file->store('landing-pages/slider', 'public');
+            }
+            $validated['image_slider'] = json_encode($paths);
+        } elseif ($request->has('keep_slider_images')) {
+            $validated['image_slider'] = $landingPage->image_slider;
+        } else {
+            if ($landingPage->image_slider) {
+                $old = json_decode($landingPage->image_slider, true);
+                if (is_array($old)) {
+                    foreach ($old as $oldPath) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+            }
+            $validated['image_slider'] = null;
+        }
+
+        $validated['faq_items'] = $this->buildFaqJson($request);
+        $validated['animation_config'] = $this->buildAnimationJson($request);
+
+        $validated['cta_text'] = $validated['cta_text'] ?? 'Pesan Sekarang';
+        $validated['cta_color'] = $validated['cta_color'] ?? '#2563eb';
 
         $landingPage->update($validated);
 
@@ -80,6 +197,27 @@ class LandingPageController extends Controller
         $landingPage->update(['is_active' => !$landingPage->is_active]);
 
         return back()->with('success', 'Status landing page berhasil diubah.');
+    }
+
+    public function destroy(LandingPage $landingPage)
+    {
+        if ($landingPage->cover_image) {
+            Storage::disk('public')->delete($landingPage->cover_image);
+        }
+
+        if ($landingPage->image_slider) {
+            $old = json_decode($landingPage->image_slider, true);
+            if (is_array($old)) {
+                foreach ($old as $oldPath) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+        }
+
+        $landingPage->delete();
+
+        return redirect()->route('admin.landing-pages.index')
+            ->with('success', 'Landing page berhasil dihapus.');
     }
 
     public function stats(LandingPage $landingPage)
@@ -97,5 +235,66 @@ class LandingPageController extends Controller
         ];
 
         return response()->json($stats);
+    }
+
+    private function buildFaqJson(Request $request): ?string
+    {
+        if ($request->has('faq_items') && !empty($request->input('faq_items'))) {
+            $decoded = json_decode($request->input('faq_items'), true);
+            if (is_array($decoded) && !empty($decoded)) {
+                $faqs = [];
+                foreach ($decoded as $item) {
+                    if (!empty($item['q']) && !empty($item['a'])) {
+                        $faqs[] = ['q' => $item['q'], 'a' => $item['a']];
+                    }
+                }
+                return !empty($faqs) ? json_encode($faqs) : null;
+            }
+        }
+        return null;
+    }
+
+    private function buildAnimationJson(Request $request): ?string
+    {
+        $animations = [];
+
+        if ($request->boolean('anim_arrow_cta')) {
+            $animations[] = [
+                'type' => 'arrow',
+                'target' => '#cta-btn',
+                'direction' => 'down',
+                'delay' => (int) ($request->input('anim_arrow_cta_delay', 2000)),
+            ];
+        }
+        if ($request->boolean('anim_pulse_cta')) {
+            $animations[] = [
+                'type' => 'pulse',
+                'target' => '#cta-btn',
+                'delay' => (int) ($request->input('anim_pulse_cta_delay', 1500)),
+            ];
+        }
+        if ($request->boolean('anim_bounce_cta')) {
+            $animations[] = [
+                'type' => 'bounce',
+                'target' => '#cta-btn',
+                'delay' => (int) ($request->input('anim_bounce_cta_delay', 2000)),
+            ];
+        }
+        if ($request->boolean('anim_shake_cta')) {
+            $animations[] = [
+                'type' => 'shake',
+                'target' => '#cta-btn',
+                'delay' => (int) ($request->input('anim_shake_cta_delay', 3000)),
+            ];
+        }
+        if ($request->boolean('anim_fade_sections')) {
+            $animations[] = [
+                'type' => 'fadein',
+                'target' => '.anim-fadein',
+                'delay' => 0,
+            ];
+        }
+
+        return !empty($animations) ? json_encode($animations) : null;
     }
 }

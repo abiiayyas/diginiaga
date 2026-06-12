@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class LPController extends Controller
 {
-    public function show(string $slug)
+    public function show(Request $request, string $slug)
     {
         $landingPage = LandingPage::with('product')
             ->where('slug', $slug)
@@ -19,7 +19,16 @@ class LPController extends Controller
 
         $landingPage->increment('visits');
 
-        return view('lp.show', compact('landingPage'));
+        $utmParams = [
+            'utm_source' => $request->query('utm_source'),
+            'utm_medium' => $request->query('utm_medium'),
+            'utm_campaign' => $request->query('utm_campaign'),
+            'utm_content' => $request->query('utm_content'),
+        ];
+
+        $utmQuery = http_build_query(array_filter($utmParams));
+
+        return view('lp.show', compact('landingPage', 'utmQuery'));
     }
 
     public function getShippingOptions(Request $request, BiteshipService $biteship)

@@ -4,47 +4,20 @@
 
 @section('content')
 <div class="max-w-2xl">
-    <h2 class="text-xl font-semibold mb-6">Tambah Produk</h2>
-    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Tambah Produk</h1>
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         @csrf
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
-            <input type="text" name="name" value="{{ old('name') }}" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            @error('name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">SKU Supplier</label>
-            <input type="text" name="sku_supplier" value="{{ old('sku_supplier') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-            <textarea name="description" rows="3" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea>
-        </div>
+        <div class="mb-4"><label class="block text-sm font-medium mb-2">Nama Produk</label><input type="text" name="name" value="{{ old('name') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">@error('name')<p class="text-red-500 text-xs mt-1">{{$message}}</p>@enderror</div>
+        <div class="mb-4"><label class="block text-sm font-medium mb-2">SKU Supplier</label><input type="text" name="sku_supplier" value="{{ old('sku_supplier') }}" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
+        <div class="mb-4"><label class="block text-sm font-medium mb-2">Deskripsi</label><textarea name="description" rows="3" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea></div>
         <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual (Rp)</label>
-                <input type="number" name="sell_price" value="{{ old('sell_price') }}" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                @error('sell_price') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Modal (Rp)</label>
-                <input type="number" name="cost_price" value="{{ old('cost_price') }}" required class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                @error('cost_price') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-            </div>
+            <div><label class="block text-sm font-medium mb-2">Harga Jual (Rp)</label><input type="number" name="sell_price" value="{{ old('sell_price') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
+            <div><label class="block text-sm font-medium mb-2">Harga Modal (Rp)</label><input type="number" name="cost_price" value="{{ old('cost_price') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
         </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Foto Produk</label>
-            <input type="file" name="images[]" multiple accept="image/*" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="mb-4">
-            <label class="flex items-center">
-                <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
-                <span class="ml-2 text-sm text-gray-700">Aktif</span>
-            </label>
-        </div>
-        <div class="flex gap-3">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Simpan</button>
-            <a href="{{ route('admin.products.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Batal</a>
-        </div>
+        <div class="mb-4"><label class="block text-sm font-medium mb-2">Foto</label><input type="file" name="images[]" multiple accept="image/*" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
+        <div class="mb-4"><label class="flex items-center gap-x-2"><input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"><span class="text-sm">Aktif</span></label></div>
+        <div class="flex gap-3"><button class="py-2 px-4 inline-flex items-center gap-x-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">Simpan</button><a href="{{ route('admin.products.index') }}" class="py-2 px-4 inline-flex items-center gap-x-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Batal</a></div>
     </form>
 </div>
+@endsection
+
