@@ -24,11 +24,11 @@
                     <p class="text-[11px] text-gray-400 mt-1.5" x-text="subheadline || 'Subheadline deskripsi'"></p>
                 </div>
 
-                {{-- Benefits Grid --}}
-                <template x-if="benefits().length">
+                {{-- Benefits Grid (Keunggulan) --}}
+                <template x-if="listItems().length">
                     <div class="grid grid-cols-2 gap-2 mb-4">
-                        <template x-for="b in benefits()" :key="b">
-                            <div class="bg-gray-50 rounded-lg p-2 text-center">
+                        <template x-for="b in listItems()" :key="b">
+                            <div class="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
                                 <div class="text-sm">✅</div>
                                 <div class="text-[10px] font-semibold mt-0.5" x-text="b"></div>
                             </div>
@@ -36,16 +36,11 @@
                     </div>
                 </template>
 
-                {{-- List Items --}}
-                <template x-if="listItems().length">
-                    <div class="mb-4">
-                        <h2 class="text-xs font-bold text-center mb-2">Apa yang Anda Dapatkan</h2>
-                        <template x-for="item in listItems()" :key="item">
-                            <div class="flex items-start gap-2 py-1.5 border-b border-gray-100 text-[11px]">
-                                <span class="text-emerald-600 flex-shrink-0">✅</span>
-                                <span x-text="item"></span>
-                            </div>
-                        </template>
+                {{-- Detail Produk --}}
+                <template x-if="body_content">
+                    <div class="mb-4 text-left">
+                        <h2 class="text-xs font-bold mb-2">Detail Produk</h2>
+                        <div class="text-[11px] text-gray-700 whitespace-pre-wrap" x-text="body_content"></div>
                     </div>
                 </template>
 
@@ -62,6 +57,7 @@
                         </template>
                     </div>
                 </template>
+
 
                 {{-- Embed --}}
                 <template x-if="embed_code">

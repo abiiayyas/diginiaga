@@ -169,12 +169,12 @@
             <button class="border border-green-500 text-green-600 px-3 py-1 rounded text-xs font-semibold">Ikuti</button>
         </div>
 
-        {{-- Benefits Grid / Body Content --}}
-        @if(count($landingPage->parsed_features))
+        {{-- Keunggulan --}}
+        @if(count($landingPage->parsed_list_items))
         <div class="bg-white p-4 mb-2 anim-fadein">
             <h2 class="font-bold text-[15px] mb-3">Keunggulan</h2>
             <div class="grid grid-cols-2 gap-3">
-                @foreach($landingPage->parsed_features as $feature)
+                @foreach($landingPage->parsed_list_items as $feature)
                 <div class="flex items-start gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="#10b981" class="flex-shrink-0 mt-0.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
                     <span class="text-xs text-gray-700 leading-snug">{{ $feature }}</span>
@@ -188,15 +188,10 @@
         <div class="bg-white p-4 mb-2">
             <h2 class="font-bold text-[15px] mb-3">Detail Produk</h2>
             
-            @if(count($landingPage->parsed_list_items))
-            <ul class="mb-4 space-y-2">
-                @foreach($landingPage->parsed_list_items as $item)
-                <li class="flex gap-2 text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
-                    <span class="text-gray-400 font-bold">&bull;</span>
-                    <span>{{ $item }}</span>
-                </li>
-                @endforeach
-            </ul>
+            @if($landingPage->body_content)
+            <div class="text-sm text-gray-700 mb-4 whitespace-pre-wrap leading-relaxed">
+                {!! nl2br(e($landingPage->body_content)) !!}
+            </div>
             @endif
 
             @if($landingPage->embed_code)

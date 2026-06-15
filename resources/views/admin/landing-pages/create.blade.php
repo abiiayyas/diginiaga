@@ -24,7 +24,7 @@ $lpData = [
     'existingFaqs' => [],
 ];
 @endphp
-<div x-data="lpEditor(@json($lpData))" class="flex gap-6" style="height: calc(100vh - 140px);">
+<div x-data='lpEditor(@json($lpData))' class="flex gap-6" style="height: calc(100vh - 140px);">
 
     {{-- LEFT: Form --}}
     <div class="flex-1 overflow-y-auto pr-2">

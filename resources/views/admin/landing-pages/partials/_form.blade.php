@@ -48,16 +48,16 @@
 {{-- Content Section --}}
 <div class="border-t pt-5">
     <h2 class="text-lg font-semibold text-gray-800 mb-3">Konten</h2>
-    <div><label class="block text-sm font-medium mb-2">Body Content (benefit, 1 per baris)</label><textarea name="body_content" rows="4" x-model="body_content" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></textarea></div>
+    <div><label class="block text-sm font-medium mb-2">Deskripsi Produk (Teks Lengkap)</label><textarea name="body_content" rows="6" x-model="body_content" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Tulis deskripsi lengkap produk di sini..."></textarea></div>
 </div>
 
 {{-- List Section --}}
 <div class="border-t pt-5">
-    <h2 class="text-lg font-semibold text-gray-800 mb-3">Daftar / List</h2>
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">Keunggulan / List</h2>
     <div>
-        <label class="block text-sm font-medium mb-2">List Items (1 per baris)</label>
-        <textarea name="list_items" rows="5" x-model="list_items" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Fitur 1&#10;Fitur 2&#10;Fitur 3"></textarea>
-        <p class="text-xs text-gray-400 mt-1">Setiap baris jadi satu item list dengan icon checkmark.</p>
+        <label class="block text-sm font-medium mb-2">Keunggulan Produk (1 per baris)</label>
+        <textarea name="list_items" rows="5" x-model="list_items" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Bahan Premium&#10;Tahan Lama&#10;Anti Air"></textarea>
+        <p class="text-xs text-gray-400 mt-1">Setiap baris akan ditampilkan di dalam kotak fitur (grid).</p>
     </div>
 </div>
 
@@ -86,6 +86,7 @@
         <p class="text-xs text-gray-400 mt-1">{{ !empty($existingSliderImages) ? 'Upload baru akan mengganti slider yang lama.' : 'Upload langsung dari komputer.' }}</p>
     </div>
 </div>
+
 
 {{-- Embed / YouTube --}}
 <div class="border-t pt-5">
