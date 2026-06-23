@@ -43,6 +43,8 @@ class ProductController extends Controller
             $validated['images'] = $paths;
         }
 
+        $validated['has_variants'] = $request->boolean('has_variants');
+
         Product::create($validated);
 
         return redirect()->route('admin.products.index')
@@ -51,6 +53,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $product->load(['options.optionValues', 'variants.optionValues']);
         return view('admin.products.edit', compact('product'));
     }
 
@@ -74,7 +77,72 @@ class ProductController extends Controller
             $validated['images'] = $paths;
         }
 
+        $validated['has_variants'] = $request->boolean('has_variants');
+
         $product->update($validated);
+
+        if ($product->has_variants && $request->filled('variants_data')) {
+            $data = json_decode($request->variants_data, true);
+            if (is_array($data)) {
+                $validOptionIds = [];
+                $validValueIds = [];
+                $validVariantIds = [];
+
+                // Process Options & Values
+                foreach ($data['options'] ?? [] as $optData) {
+                    $option = $product->options()->firstOrCreate(['name' => $optData['name']]);
+                    $validOptionIds[] = $option->id;
+
+                    foreach ($optData['values'] ?? [] as $valStr) {
+                        $valStr = trim($valStr);
+                        if(empty($valStr)) continue;
+                        
+                        $val = $option->optionValues()->firstOrCreate(['value' => $valStr]);
+                        $validValueIds[] = $val->id;
+                    }
+                }
+
+                // Delete removed options/values
+                \App\Models\ProductOptionValue::whereIn('product_option_id', $product->options->pluck('id'))
+                    ->whereNotIn('id', $validValueIds)->delete();
+                $product->options()->whereNotIn('id', $validOptionIds)->delete();
+
+                // Process Variants
+                foreach ($data['variants'] ?? [] as $varData) {
+                    $variant = $product->variants()->updateOrCreate(
+                        ['id' => $varData['id'] ?? null],
+                        [
+                            'sku' => $varData['sku'],
+                            'sell_price' => $varData['sell_price'],
+                            'cost_price' => $varData['cost_price'] ?? 0,
+                            'stock' => $varData['stock'] ?? 0,
+                            'is_active' => true,
+                        ]
+                    );
+                    $validVariantIds[] = $variant->id;
+
+                    // Sync combination
+                    $combinationValueIds = [];
+                    foreach ($varData['combination'] ?? [] as $optName => $optValStr) {
+                        $option = $product->options()->where('name', $optName)->first();
+                        if ($option) {
+                            $val = $option->optionValues()->where('value', $optValStr)->first();
+                            if ($val) {
+                                $combinationValueIds[] = $val->id;
+                            }
+                        }
+                    }
+                    $variant->optionValues()->sync($combinationValueIds);
+                }
+
+                // Delete removed variants
+                $product->variants()->whereNotIn('id', $validVariantIds)->delete();
+            }
+        } elseif (!$product->has_variants) {
+            // If unchecked, delete all variants
+            $product->options()->delete(); // cascade deletes values
+            $product->variants()->delete(); // cascade deletes pivot
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil diperbarui.');

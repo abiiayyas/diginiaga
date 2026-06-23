@@ -15,6 +15,12 @@
             <div><label class="block text-sm font-medium mb-2">Harga Modal (Rp)</label><input type="number" name="cost_price" value="{{ old('cost_price') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
         </div>
         <div class="mb-4"><label class="block text-sm font-medium mb-2">Foto</label><input type="file" name="images[]" multiple accept="image/*" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
+        <div class="mb-4">
+            <label class="flex items-center gap-x-2">
+                <input type="checkbox" name="has_variants" value="1" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="text-sm font-medium text-gray-900">Produk ini memiliki variasi (Warna, Ukuran, dll)</span>
+            </label>
+        </div>
         <div class="mb-4"><label class="flex items-center gap-x-2"><input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"><span class="text-sm">Aktif</span></label></div>
         <div class="flex gap-3"><button class="py-2 px-4 inline-flex items-center gap-x-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">Simpan</button><a href="{{ route('admin.products.index') }}" class="py-2 px-4 inline-flex items-center gap-x-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Batal</a></div>
     </form>
