@@ -6,7 +6,12 @@
     <title>{{ $landingPage->headline ?: $landingPage->product->name }}</title>
     <meta name="description" content="{{ $landingPage->subheadline ?: $landingPage->product->description }}">
 
-    @if($landingPage->pixel_id)
+    @php
+        $globalPixel = \App\Models\Setting::get('global_pixel_id');
+        $hasPixel = $landingPage->pixel_id || $globalPixel;
+    @endphp
+
+    @if($hasPixel)
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -16,7 +21,12 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
+    @if($globalPixel)
+    fbq('init', '{{ $globalPixel }}');
+    @endif
+    @if($landingPage->pixel_id)
     fbq('init', '{{ $landingPage->pixel_id }}');
+    @endif
     fbq('track', 'PageView');
     </script>
     @endif
@@ -63,10 +73,7 @@
     <div class="max-w-md mx-auto bg-gray-100 min-h-screen relative shadow-2xl overflow-x-hidden pb-[80px]">
 
         {{-- Floating Header --}}
-        <header id="top-header" class="fixed top-0 max-w-md w-full z-50 flex items-center justify-between px-4 py-3">
-            <button onclick="window.history.back()" class="header-icon w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white transition-colors">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 11.25H4.78l5.73-5.72a.77.77 0 0 0 0-1.07.75.75 0 0 0-1.06 0l-7.1 7.1a.77.77 0 0 0 0 1.07l7.1 7.1a.75.75 0 0 0 1.06 0 .77.77 0 0 0 0-1.07l-5.92-5.91H20a.75.75 0 1 0 0-1.5Z"></path></svg>
-            </button>
+        <header id="top-header" class="fixed top-0 max-w-md w-full z-50 flex items-center justify-end px-4 py-3">
             <div class="flex items-center gap-3">
                 <button class="header-icon w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white transition-colors" onclick="alert('Bagikan link disalin!'); navigator.clipboard.writeText(window.location.href);">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3.092 19.78a1 1 0 0 0 .78-.57c2.36-3.81 6.57-4.82 9.95-5v2.45a1.33 1.33 0 0 0 .8 1.22 1.25 1.25 0 0 0 1.37-.28l5.1-5a2.25 2.25 0 0 0 0-3.18l-5.05-5a1.25 1.25 0 0 0-1.38-.28 1.29 1.29 0 0 0-.79 1.2v2.43c-6.78.32-11.53 4.94-11.53 11.23a.8.8 0 0 0 .55.75l.2.03Zm11.5-7.03c-3.24 0-7.44.69-10.42 3.7 1.14-4.29 5.18-7.2 10.42-7.2a.76.76 0 0 0 .75-.75V5.82l4.66 4.66a.75.75 0 0 1 0 1.06l-4.66 4.66v-2.7a.76.76 0 0 0-.75-.75Z"></path></svg>
@@ -285,6 +292,10 @@
         </div>
     </div>
 
+    @if($globalPixel)
+    <noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id={{ $globalPixel }}&ev=PageView&noscript=1"/></noscript>
+    @endif
     @if($landingPage->pixel_id)
     <noscript><img height="1" width="1" style="display:none"
         src="https://www.facebook.com/tr?id={{ $landingPage->pixel_id }}&ev=PageView&noscript=1"/></noscript>
