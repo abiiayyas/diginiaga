@@ -14,6 +14,7 @@ class Product extends Model
         'cost_price',
         'images',
         'is_active',
+        'has_variants',
     ];
 
     protected $casts = [
@@ -21,6 +22,7 @@ class Product extends Model
         'sell_price' => 'integer',
         'cost_price' => 'integer',
         'is_active' => 'boolean',
+        'has_variants' => 'boolean',
     ];
 
     public function landingPages()
@@ -31,5 +33,15 @@ class Product extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(ProductOption::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 }

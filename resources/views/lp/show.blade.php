@@ -133,7 +133,7 @@
         <div class="bg-white p-4 mb-2">
             <div class="flex justify-between items-start mb-2">
                 <div>
-                    <div class="text-2xl font-black text-red-600">Rp{{ number_format($price, 0, ',', '.') }}</div>
+                    <div class="text-2xl font-black text-red-600" id="price-display">Rp{{ number_format($price, 0, ',', '.') }}</div>
                     <div class="flex items-center gap-2 mt-1">
                         <span class="text-xs text-gray-400 line-through">Rp{{ number_format($fakeOriginalPrice, 0, ',', '.') }}</span>
                         <span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">{{ $discountPercent }}% OFF</span>
@@ -158,6 +158,27 @@
             <p class="text-sm text-gray-500 mt-3 pt-3 border-t border-gray-100">{{ $landingPage->subheadline }}</p>
             @endif
         </div>
+
+        {{-- Variants Section --}}
+        @if($landingPage->product->has_variants && count($landingPage->product->options))
+        <div class="bg-white p-4 mb-2 anim-fadein">
+            <h2 class="font-bold text-[15px] mb-3">Pilih Variasi</h2>
+            <div id="variants-container" class="space-y-3">
+                @foreach($landingPage->product->options as $option)
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">{{ $option->name }}</label>
+                    <select class="variant-option-select w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-gray-50" data-option-id="{{ $option->id }}">
+                        <option value="">Pilih {{ $option->name }}</option>
+                        @foreach($option->optionValues as $val)
+                        <option value="{{ $val->id }}">{{ $val->value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endforeach
+            </div>
+            <div id="variant-error" class="text-xs text-red-500 mt-2 hidden">Kombinasi variasi tidak tersedia.</div>
+        </div>
+        @endif
 
         {{-- Store Section --}}
         <div class="bg-white p-4 mb-2 flex justify-between items-center">
@@ -313,6 +334,85 @@
                 header.classList.remove('scrolled');
             }
         });
+
+        // Product Variants Handling
+        const hasVariants = {{ $landingPage->product->has_variants ? 'true' : 'false' }};
+        const productVariants = @json($landingPage->product->variants);
+        let selectedVariantId = null;
+        const ctaBtn = document.getElementById('cta-btn');
+        const priceDisplay = document.getElementById('price-display');
+        const variantError = document.getElementById('variant-error');
+        
+        let baseUrl = ctaBtn ? ctaBtn.href : '';
+        // Bersihkan ?variant_id jika kebetulan sudah ada di URL dasar
+        if (baseUrl.includes('variant_id=')) {
+            baseUrl = baseUrl.replace(/([?&])variant_id=[^&]+(&|$)/, '$1').replace(/[?&]$/, '');
+        }
+
+        if (hasVariants && ctaBtn) {
+            ctaBtn.addEventListener('click', function(e) {
+                if (!selectedVariantId) {
+                    e.preventDefault();
+                    alert('Silakan pilih variasi produk terlebih dahulu!');
+                    const variantsContainer = document.getElementById('variants-container');
+                    if (variantsContainer) {
+                        variantsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+
+            const selects = document.querySelectorAll('.variant-option-select');
+            selects.forEach(select => {
+                select.addEventListener('change', checkVariantCombination);
+            });
+
+            function checkVariantCombination() {
+                let selectedOptionValueIds = [];
+                let allSelected = true;
+
+                selects.forEach(sel => {
+                    if (sel.value) {
+                        selectedOptionValueIds.push(parseInt(sel.value));
+                    } else {
+                        allSelected = false;
+                    }
+                });
+
+                if (!allSelected) {
+                    selectedVariantId = null;
+                    if(variantError) variantError.classList.add('hidden');
+                    updateCtaUrl();
+                    return;
+                }
+
+                const matchedVariant = productVariants.find(variant => {
+                    if (!variant.option_values) return false;
+                    const variantOptionIds = variant.option_values.map(ov => ov.id);
+                    return selectedOptionValueIds.every(id => variantOptionIds.includes(id)) && 
+                           selectedOptionValueIds.length === variantOptionIds.length;
+                });
+
+                if (matchedVariant) {
+                    selectedVariantId = matchedVariant.id;
+                    if(variantError) variantError.classList.add('hidden');
+                    if(priceDisplay) priceDisplay.innerText = 'Rp' + new Intl.NumberFormat('id-ID').format(matchedVariant.sell_price);
+                    updateCtaUrl();
+                } else {
+                    selectedVariantId = null;
+                    if(variantError) variantError.classList.remove('hidden');
+                    updateCtaUrl();
+                }
+            }
+
+            function updateCtaUrl() {
+                if (selectedVariantId) {
+                    const separator = baseUrl.includes('?') ? '&' : '?';
+                    ctaBtn.href = baseUrl + separator + 'variant_id=' + selectedVariantId;
+                } else {
+                    ctaBtn.href = baseUrl;
+                }
+            }
+        }
 
         // 2. Slider Logic
         const track = document.getElementById('hero-slider-track');

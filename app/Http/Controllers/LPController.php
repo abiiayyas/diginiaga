@@ -12,7 +12,7 @@ class LPController extends Controller
 {
     public function show(Request $request, string $slug)
     {
-        $landingPage = LandingPage::with('product')
+        $landingPage = LandingPage::with(['product.options.optionValues', 'product.variants.optionValues'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
@@ -58,6 +58,7 @@ class LPController extends Controller
     {
         $validated = $request->validate([
             'landing_page_id' => 'required|exists:landing_pages,id',
+            'product_variant_id' => 'nullable|exists:product_variants,id',
             'customer_name' => 'required|string|max:255',
             'customer_phone' => 'required|string|max:20',
             'customer_address' => 'required|string',
@@ -73,9 +74,18 @@ class LPController extends Controller
 
         $landingPage = LandingPage::with('product')->findOrFail($validated['landing_page_id']);
 
+        $variant = null;
+        if ($landingPage->product->has_variants) {
+            $request->validate(['product_variant_id' => 'required|exists:product_variants,id']);
+            $variant = \App\Models\ProductVariant::findOrFail($validated['product_variant_id']);
+            if ($variant->product_id !== $landingPage->product_id) {
+                abort(400, 'Invalid variant');
+            }
+        }
+
         $qty = $validated['qty'] ?? 1;
         $shippingCost = $validated['shipping_cost'] ?? 0;
-        $unitPrice = $landingPage->product->sell_price;
+        $unitPrice = $variant ? $variant->sell_price : $landingPage->product->sell_price;
         $totalAmount = ($unitPrice * $qty) + $shippingCost;
 
         $isCod = $request->boolean('is_cod');
@@ -83,6 +93,7 @@ class LPController extends Controller
         $order = Order::create([
             'landing_page_id' => $landingPage->id,
             'product_id' => $landingPage->product_id,
+            'product_variant_id' => $variant ? $variant->id : null,
             'customer_name' => $validated['customer_name'],
             'customer_phone' => $validated['customer_phone'],
             'customer_address' => $validated['customer_address'],

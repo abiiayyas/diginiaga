@@ -10,6 +10,7 @@ class Order extends Model
         'order_number',
         'landing_page_id',
         'product_id',
+        'product_variant_id',
         'customer_name',
         'customer_phone',
         'customer_address',
@@ -62,6 +63,11 @@ class Order extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function productVariant()
+    {
+        return $this->belongsTo(ProductVariant::class);
     }
 
     public function shipment()

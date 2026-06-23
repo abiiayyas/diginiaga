@@ -21,10 +21,22 @@ class CheckoutController extends Controller
 
     public function showForm(Request $request, string $slug)
     {
-        $landingPage = LandingPage::with('product')
+        $landingPage = LandingPage::with(['product.options.optionValues', 'product.variants.optionValues'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
+
+        $variant = null;
+        if ($landingPage->product->has_variants) {
+            $variantId = $request->query('variant_id');
+            if (!$variantId) {
+                return redirect()->route('lp.show', $slug)->with('error', 'Silakan pilih varian produk terlebih dahulu.');
+            }
+            $variant = \App\Models\ProductVariant::findOrFail($variantId);
+            if ($variant->product_id !== $landingPage->product_id) {
+                abort(400, 'Invalid variant');
+            }
+        }
 
         $utmParams = [
             'utm_source' => $request->query('utm_source'),
@@ -35,12 +47,12 @@ class CheckoutController extends Controller
 
         $utmQuery = http_build_query(array_filter($utmParams));
 
-        return view('checkout.form', compact('landingPage', 'utmQuery'));
+        return view('checkout.form', compact('landingPage', 'utmQuery', 'variant'));
     }
 
     public function payment(string $orderNumber)
     {
-        $order = Order::with(['product', 'landingPage'])
+        $order = Order::with(['product', 'landingPage', 'productVariant.optionValues'])
             ->where('order_number', $orderNumber)
             ->firstOrFail();
 
@@ -73,7 +85,7 @@ class CheckoutController extends Controller
 
         $order = null;
         if ($orderNumber) {
-            $order = Order::with(['product', 'landingPage'])
+            $order = Order::with(['product', 'landingPage', 'productVariant.optionValues'])
                 ->where('order_number', $orderNumber)
                 ->first();
         }
@@ -95,7 +107,7 @@ class CheckoutController extends Controller
 
     public function cod(string $orderNumber)
     {
-        $order = Order::with(['product', 'landingPage'])
+        $order = Order::with(['product', 'landingPage', 'productVariant.optionValues'])
             ->where('order_number', $orderNumber)
             ->firstOrFail();
 

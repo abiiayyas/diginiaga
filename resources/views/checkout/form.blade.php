@@ -60,8 +60,13 @@
             <h2>Detail Pesanan</h2>
             <div class="product-summary">
                 <div class="info">
-                    <h3>{{ $landingPage->headline ?: $landingPage->product->name }}</h3>
-                    <div class="price">Rp {{ number_format($landingPage->product->sell_price, 0, ',', '.') }}</div>
+                    <h3>
+                        {{ $landingPage->headline ?: $landingPage->product->name }}
+                        @if(isset($variant) && $variant)
+                            <br><span style="font-size: 0.9rem; font-weight: normal; color: #6b7280">Varian: {{ collect($variant->optionValues ?? [])->pluck('value')->join(', ') }}</span>
+                        @endif
+                    </h3>
+                    <div class="price">Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</div>
                 </div>
             </div>
         </div>
@@ -71,6 +76,9 @@
             <form id="order-form" method="POST" action="{{ route('lp.order.create') }}">
                 @csrf
                 <input type="hidden" name="landing_page_id" value="{{ $landingPage->id }}">
+                @if(isset($variant) && $variant)
+                <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                @endif
                 <input type="hidden" name="shipping_cost" value="0">
                 @if($utmQuery)
                 <input type="hidden" name="utm_source" value="{{ request()->query('utm_source') }}">
@@ -123,7 +131,7 @@
 
                 <div class="total-display" id="total-display">
                     <div class="label">Total Pembayaran</div>
-                    <div class="amount" id="total-amount">Rp {{ number_format($landingPage->product->sell_price, 0, ',', '.') }}</div>
+                    <div class="amount" id="total-amount">Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</div>
                 </div>
 
                 <div style="margin-top: 16px">
@@ -148,7 +156,7 @@
     @endif
 
     <script>
-    const productPrice = {{ $landingPage->product->sell_price }};
+    const productPrice = {{ isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price }};
     const pixelId = '{{ $landingPage->pixel_id }}';
     let selectedShippingCost = 0;
     let selectedCourier = '';
