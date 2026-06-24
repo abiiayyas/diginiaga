@@ -173,9 +173,9 @@
                         <option value="{{ $val->id }}">{{ $val->value }}</option>
                         @endforeach
                     </select>
-                </li>
+                </div>
                 @endforeach
-            </ul>
+            </div>
             <div id="variant-error" class="text-xs text-red-500 mt-2 hidden">Kombinasi variasi tidak tersedia.</div>
         </div>
         @endif
@@ -202,10 +202,10 @@
         <div class="bg-white p-4 mb-2 anim-fadein">
             <h2 class="font-bold text-[15px] mb-3">Keunggulan</h2>
             <ul class="space-y-2 pl-1">
-                @foreach($landingPage->parsed_list_items as $feature)
+                @foreach(->parsed_list_items as )
                 <li class="flex items-start gap-2">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="#10b981" class="flex-shrink-0 mt-0.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
-                    <span class="text-sm text-gray-700 leading-relaxed">{{ $feature }}</span>
+                    <span class="text-sm text-gray-700 leading-relaxed">{{  }}</span>
                 </li>
                 @endforeach
             </ul>
@@ -252,9 +252,9 @@
                     </div>
                     <div class="text-[11px] text-gray-500 mb-2 font-medium">{{ $t['name'] }} <span class="text-gray-300 mx-1">|</span> {{ $t['role'] }}</div>
                     <div class="text-xs text-gray-700 leading-relaxed line-clamp-3">"{{ $t['quote'] }}"</div>
-                </li>
+                </div>
                 @endforeach
-            </ul>
+            </div>
         </div>
         @endif
 
@@ -272,9 +272,9 @@
                     <div class="faq-answer max-h-0 overflow-hidden transition-all duration-300 ease-in-out text-xs text-gray-600">
                         <div class="pb-2 pt-1">{{ $faq['a'] }}</div>
                     </div>
-                </li>
+                </div>
                 @endforeach
-            </ul>
+            </div>
             <style>
                 .faq-item.open .arrow { transform: rotate(180deg); }
                 .faq-item.open .faq-answer { max-height: 300px; }
