@@ -44,7 +44,7 @@
                     <div class="space-y-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Toko</label>
-                            <input type="text" name="store_name" value="{{ ["/store_name/"] ?? config("/app.name/", "Toko Resmi") }}" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Diginiaga Shop">
+                            <input type="text" name="store_name" value="{{ $settings['store_name'] ?? config('app.name', 'Toko Resmi') }}" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Diginiaga Shop">
                             <p class="text-[11px] text-gray-400 mt-1">Nama ini akan muncul di bagian "Toko Resmi" pada landing page.</p>
                         </div>
                     </div>
