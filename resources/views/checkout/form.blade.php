@@ -22,132 +22,223 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f3f4f6; min-height: 100vh; color: #1f2937; }
-        .container { max-width: 540px; margin: 0 auto; padding: 32px 20px; }
-        .card { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; }
-        .card h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 16px; }
-        .product-summary { display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px; }
-        .product-summary .info h3 { font-size: 1.05rem; font-weight: 600; }
-        .product-summary .info .price { font-size: 1.25rem; font-weight: 800; color: #059669; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 4px; color: #374151; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-submit { width: 100%; padding: 16px; font-size: 1rem; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; color: white; transition: opacity 0.2s; }
-        .btn-submit:hover { opacity: 0.9; }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-        .shipping-options { margin-top: 8px; padding: 12px; background: #f9fafb; border-radius: 8px; }
-        .shipping-option { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .shipping-option:hover { border-color: #2563eb; background: #eff6ff; }
-        .shipping-option.selected { border-color: #2563eb; background: #eff6ff; }
-        .shipping-option:last-child { margin-bottom: 0; }
-        .total-display { margin-top: 20px; padding: 20px; background: #f0fdf4; border-radius: 12px; }
-        .total-display .label { font-size: 0.875rem; color: #059669; }
-        .total-display .amount { font-size: 1.5rem; font-weight: 800; color: #059669; }
-        .footer { text-align: center; padding: 24px; color: #9ca3af; font-size: 0.8rem; }
-        .error { color: #dc2626; font-size: 0.8rem; margin-top: 4px; }
-        .loading { text-align: center; padding: 20px; color: #6b7280; }
-        .back-link { display: block; text-align: center; margin-top: 16px; color: #6b7280; text-decoration: none; font-size: 0.9rem; }
-        .back-link:hover { color: #374151; }
+        :root {
+            --brand-color: {{ $landingPage->cta_color ?: '#ea580c' }};
+        }
+        .bg-brand { background-color: var(--brand-color) !important; }
+        .text-brand { color: var(--brand-color) !important; }
+        .border-brand { border-color: var(--brand-color) !important; }
+        
+        .stripe-border {
+            height: 3px;
+            background-image: repeating-linear-gradient(45deg, #6fa6d6, #6fa6d6 33px, transparent 0, transparent 41px, #f18d9b 0, #f18d9b 74px, transparent 0, transparent 82px);
+            background-position-x: -1.875rem;
+            background-size: 7.25rem .1875rem;
+        }
+
+        /* Custom radio buttons */
+        .custom-radio:checked + label {
+            border-color: var(--brand-color);
+            background-color: #fffaf9;
+        }
+        .custom-radio:checked + label .radio-indicator {
+            border-color: var(--brand-color);
+            border-width: 5px;
+        }
+        
+        /* Disable arrows on number input */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="card">
-            <h2>Detail Pesanan</h2>
-            <div class="product-summary">
-                <div class="info">
-                    <h3>
-                        {{ $landingPage->headline ?: $landingPage->product->name }}
-                        @if(isset($variant) && $variant)
-                            <br><span style="font-size: 0.9rem; font-weight: normal; color: #6b7280">Varian: {{ collect($variant->optionValues ?? [])->pluck('value')->join(', ') }}</span>
-                        @endif
-                    </h3>
-                    <div class="price">Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</div>
+<body class="bg-gray-100 font-sans antialiased text-gray-800 pb-24">
+
+    <!-- Top Nav -->
+    <div class="sticky top-0 z-50 bg-brand text-white shadow-sm">
+        <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+            <a href="{{ route('lp.show', $landingPage->slug) }}" class="text-white hover:text-gray-200 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+            <h1 class="text-lg font-semibold">Checkout</h1>
+            <div class="w-6"></div> <!-- spacer -->
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto mt-3 space-y-3 px-3">
+        <form id="order-form" method="POST" action="{{ route('lp.order.create') }}">
+            @csrf
+            <input type="hidden" name="landing_page_id" value="{{ $landingPage->id }}">
+            @if(isset($variant) && $variant)
+            <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+            @endif
+            <input type="hidden" name="shipping_cost" value="0">
+            @if($utmQuery)
+            <input type="hidden" name="utm_source" value="{{ request()->query('utm_source') }}">
+            <input type="hidden" name="utm_medium" value="{{ request()->query('utm_medium') }}">
+            <input type="hidden" name="utm_campaign" value="{{ request()->query('utm_campaign') }}">
+            <input type="hidden" name="utm_content" value="{{ request()->query('utm_content') }}">
+            @endif
+
+            <!-- Alamat Pengiriman -->
+            <div class="bg-white rounded-t-xl shadow-sm overflow-hidden relative">
+                <div class="p-4">
+                    <div class="flex items-center text-brand mb-3">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <h2 class="font-semibold text-sm">Alamat Pengiriman</h2>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Nama Lengkap</label>
+                                <input type="text" name="customer_name" required placeholder="Nama Anda" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">No. WhatsApp</label>
+                                <input type="tel" name="customer_phone" required placeholder="0812..." class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Alamat Lengkap</label>
+                            <textarea name="customer_address" rows="2" required placeholder="Nama Jalan, RT/RW, Kelurahan, Kec." class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all"></textarea>
+                        </div>
+                        <div class="grid grid-cols-6 gap-3">
+                            <div class="col-span-3">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Kota/Kabupaten</label>
+                                <input type="text" name="customer_city" required placeholder="Kota" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Provinsi</label>
+                                <input type="text" name="customer_province" required placeholder="Provinsi" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Kode Pos</label>
+                            <input type="number" name="customer_postal_code" required placeholder="12345" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
+                        </div>
+                    </div>
+                </div>
+                <!-- Striped Border for Address -->
+                <div class="stripe-border w-full absolute bottom-0"></div>
+            </div>
+
+            <!-- Detail Produk -->
+            <div class="bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center space-x-2 mb-3">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    <h2 class="font-semibold text-sm">Produk</h2>
+                </div>
+                
+                <div class="flex gap-3">
+                    <!-- Placeholder for Product Image, you can replace with actual image if exists -->
+                    <div class="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 border border-gray-200 flex items-center justify-center overflow-hidden">
+                        <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between">
+                                <h3 class="text-sm font-medium leading-tight text-gray-800">{{ $landingPage->headline ?: $landingPage->product->name }}</h3>
+                                <span class="text-xs text-gray-500 font-medium ml-2">x1</span>
+                            </div>
+                            @if(isset($variant) && $variant)
+                                <div class="text-xs text-gray-500 mt-1 bg-gray-100 inline-block px-2 py-0.5 rounded">
+                                    Varian: {{ collect($variant->optionValues ?? [])->pluck('value')->join(', ') }}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="text-brand font-bold text-sm mt-2">
+                            Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h2>Isi Form Pemesanan</h2>
-            <form id="order-form" method="POST" action="{{ route('lp.order.create') }}">
-                @csrf
-                <input type="hidden" name="landing_page_id" value="{{ $landingPage->id }}">
-                @if(isset($variant) && $variant)
-                <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                @endif
-                <input type="hidden" name="shipping_cost" value="0">
-                @if($utmQuery)
-                <input type="hidden" name="utm_source" value="{{ request()->query('utm_source') }}">
-                <input type="hidden" name="utm_medium" value="{{ request()->query('utm_medium') }}">
-                <input type="hidden" name="utm_campaign" value="{{ request()->query('utm_campaign') }}">
-                <input type="hidden" name="utm_content" value="{{ request()->query('utm_content') }}">
-                @endif
-
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="customer_name" required placeholder="Nama lengkap Anda">
+            <!-- Opsi Pengiriman -->
+            <div class="bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center mb-3 text-brand">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    <h2 class="font-semibold text-sm text-gray-800">Opsi Pengiriman</h2>
                 </div>
-                <div class="form-group">
-                    <label>Nomor WhatsApp</label>
-                    <input type="tel" name="customer_phone" required placeholder="0812xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>Alamat Lengkap</label>
-                    <textarea name="customer_address" rows="2" required placeholder="Jalan, nomor rumah, RT/RW, kelurahan"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Kota</label>
-                        <input type="text" name="customer_city" required placeholder="Kota/Kabupaten">
-                    </div>
-                    <div class="form-group">
-                        <label>Provinsi</label>
-                        <input type="text" name="customer_province" required placeholder="Provinsi">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Kode Pos</label>
-                    <input type="text" name="customer_postal_code" required placeholder="12345">
-                </div>
-                <div class="form-group">
-                    <label>Pilih Kurir</label>
-                    <select name="shipping_courier" id="courier-select" required onchange="loadShippingOptions()">
-                        <option value="">Pilih kurir...</option>
+                
+                <div class="mb-3">
+                    <select name="shipping_courier" id="courier-select" required onchange="loadShippingOptions()" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all appearance-none bg-gray-50">
+                        <option value="">Pilih kurir pengiriman...</option>
                     </select>
-                    <div id="shipping-options" class="shipping-options" style="display:none"></div>
                 </div>
-
-                <div class="form-group" style="margin-top: 12px">
-                    <label style="display: flex; align-items: center; cursor: pointer">
-                        <input type="checkbox" name="is_cod" value="1" id="cod-checkbox" onchange="toggleCod()" style="width: auto; margin-right: 8px;">
-                        <span>COD (Bayar di Tempat)</span>
-                    </label>
-                    <small id="cod-note" style="display: none; color: #92400e">Order akan diproses tanpa pembayaran di muka. Bayar saat paket diterima.</small>
+                
+                <div id="shipping-options" class="space-y-2" style="display:none">
+                    <!-- JS will populate this -->
                 </div>
+            </div>
 
-                <div class="total-display" id="total-display">
-                    <div class="label">Total Pembayaran</div>
-                    <div class="amount" id="total-amount">Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</div>
+            <!-- Metode Pembayaran -->
+            <div class="bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center mb-3">
+                    <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <h2 class="font-semibold text-sm">Metode Pembayaran</h2>
                 </div>
+                
+                <div class="space-y-2">
+                    <div class="relative">
+                        <input type="checkbox" name="is_cod" value="1" id="cod-checkbox" class="peer sr-only" onchange="updateTotal()">
+                        <label for="cod-checkbox" class="flex items-center justify-between w-full p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-brand peer-checked:bg-orange-50/30 transition-all">
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 rounded border border-gray-300 mr-3 flex items-center justify-center peer-checked:bg-brand peer-checked:border-brand">
+                                    <svg class="w-3.5 h-3.5 text-white opacity-0 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">COD (Bayar di Tempat)</div>
+                                    <div class="text-xs text-gray-500">Bayar langsung ke kurir saat paket tiba</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
 
-                <div style="margin-top: 16px">
-                    <button type="submit" class="btn-submit" style="background-color: {{ $landingPage->cta_color }}"
-                        onclick="trackCheckout()">
-                        {{ $landingPage->cta_text ?: 'Pesan Sekarang' }}
+            <!-- Rincian Pembayaran -->
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                <div class="flex items-center mb-3">
+                    <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    <h2 class="font-semibold text-sm">Rincian Pembayaran</h2>
+                </div>
+                
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal untuk Produk</span>
+                        <span>Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal Pengiriman</span>
+                        <span id="summary-shipping">Rp 0</span>
+                    </div>
+                    <div class="border-t border-gray-100 mt-3 pt-3 flex justify-between items-center">
+                        <span class="font-medium text-gray-800">Total Pembayaran</span>
+                        <span class="font-bold text-lg text-brand" id="summary-total">Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sticky Bottom Bar -->
+            <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+                <div class="max-w-md mx-auto flex items-center justify-between px-4 py-3">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 font-medium">Total Pembayaran</span>
+                        <span class="text-lg font-bold text-brand" id="bottom-total">Rp {{ number_format(isset($variant) && $variant ? $variant->sell_price : $landingPage->product->sell_price, 0, ',', '.') }}</span>
+                    </div>
+                    <button type="submit" class="bg-brand text-white font-semibold py-2.5 px-6 rounded-lg text-sm hover:opacity-90 transition-opacity active:scale-95" onclick="trackCheckout()">
+                        Buat Pesanan
                     </button>
                 </div>
-            </form>
-        </div>
-
-        <a href="{{ route('lp.show', $landingPage->slug) }}" class="back-link">&larr; Kembali</a>
-
-        <div class="footer">
-            &copy; {{ date('Y') }} {{ config('app.name') }}
-        </div>
+            </div>
+            
+        </form>
     </div>
 
     @if($landingPage->pixel_id)
@@ -161,6 +252,17 @@
     let selectedShippingCost = 0;
     let selectedCourier = '';
 
+    // Adding dynamic CSS for checkbox custom color based on brand color
+    document.head.insertAdjacentHTML("beforeend", `<style>
+        input[type="checkbox"]:checked + label .w-5 {
+            background-color: var(--brand-color);
+            border-color: var(--brand-color);
+        }
+        input[type="checkbox"]:checked + label .opacity-0 {
+            opacity: 1;
+        }
+    </style>`);
+
     async function loadCouriers() {
         const select = document.getElementById('courier-select');
         try {
@@ -169,12 +271,30 @@
             data.couriers.forEach(courier => {
                 const option = document.createElement('option');
                 option.value = courier.code;
-                option.textContent = courier.name;
+                option.textContent = courier.name.toUpperCase();
                 select.appendChild(option);
             });
         } catch(e) {
-            select.innerHTML = '<option value="jne">JNE</option><option value="jnt">J&T Express</option><option value="sicepat">SiCepat</option>';
+            select.innerHTML = '<option value="">Pilih kurir pengiriman...</option><option value="jne">JNE</option><option value="jnt">J&T Express</option><option value="sicepat">SiCepat</option>';
         }
+    }
+
+    function getCourierLogo(code) {
+        code = code.toLowerCase();
+        // Maps simple code to CDN URLs or generic text 
+        // In real world, replace with actual CDN links or assets
+        const logos = {
+            'jne': 'https://s3-ap-southeast-1.amazonaws.com/biteship-storage/jne.png',
+            'jnt': 'https://s3-ap-southeast-1.amazonaws.com/biteship-storage/jnt.png',
+            'sicepat': 'https://s3-ap-southeast-1.amazonaws.com/biteship-storage/sicepat.png',
+            'ninja': 'https://s3-ap-southeast-1.amazonaws.com/biteship-storage/ninja.png',
+            'anteraja': 'https://s3-ap-southeast-1.amazonaws.com/biteship-storage/anteraja.png'
+        };
+        
+        if (logos[code]) {
+            return `<img src="${logos[code]}" alt="${code}" class="h-6 object-contain" onerror="this.outerHTML='<span class=\\'font-bold text-gray-700\\'>${code.toUpperCase()}</span>'">`;
+        }
+        return `<span class="font-bold text-gray-700">${code.toUpperCase()}</span>`;
     }
 
     async function loadShippingOptions() {
@@ -182,7 +302,7 @@
         const container = document.getElementById('shipping-options');
         if (!courier) { container.style.display = 'none'; return; }
 
-        container.innerHTML = '<div class="loading">Memuat ongkir...</div>';
+        container.innerHTML = '<div class="text-center py-4 text-sm text-gray-500">Memuat tarif ongkos kirim...</div>';
         container.style.display = 'block';
 
         try {
@@ -191,43 +311,74 @@
             const courierData = data.couriers.find(c => c.code === courier);
             if (courierData) {
                 container.innerHTML = courierData.services.map((s, i) => `
-                    <div class="shipping-option" onclick="selectShipping(this, '${courierData.name}', '${s.name}', ${s.cost}, '${s.etd}')">
-                        <div>
-                            <strong>${s.name}</strong> (${s.description})
-                            <br><small style="color:#6b7280">Estimasi ${s.etd}</small>
-                        </div>
-                        <div style="font-weight:600">Rp ${s.cost.toLocaleString('id-ID')}</div>
+                    <div class="relative">
+                        <input type="radio" name="shipping_service" id="ship-${i}" value="${s.name}" class="custom-radio sr-only" onchange="selectShipping('${courierData.code}', '${s.name}', ${s.cost}, '${s.etd}')">
+                        <label for="ship-${i}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-8 flex items-center justify-center bg-white rounded border border-gray-100">
+                                    ${getCourierLogo(courierData.code)}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-800">${s.name} <span class="font-normal text-gray-500">(${s.description})</span></div>
+                                    <div class="text-xs text-gray-500 mt-0.5">Estimasi sampai ${s.etd}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="text-sm font-bold text-gray-800">Rp ${s.cost.toLocaleString('id-ID')}</div>
+                                <div class="w-4 h-4 rounded-full border border-gray-300 radio-indicator transition-all"></div>
+                            </div>
+                        </label>
                     </div>
                 `).join('');
+                
+                // auto select first
+                if (courierData.services.length > 0) {
+                    const firstOption = document.getElementById('ship-0');
+                    if (firstOption) {
+                        firstOption.checked = true;
+                        selectShipping(courierData.code, courierData.services[0].name, courierData.services[0].cost, courierData.services[0].etd);
+                    }
+                }
             }
         } catch(e) {
             container.innerHTML = `
-                <div class="shipping-option" onclick="selectShipping(this, '${courier.toUpperCase()}', 'REG', 9000, '2-3 hari')">
-                    <div><strong>Reguler</strong><br><small style="color:#6b7280">Estimasi 2-3 hari</small></div>
-                    <div style="font-weight:600">Rp 9.000</div>
+                <div class="relative">
+                    <input type="radio" name="shipping_service" id="ship-default" value="REG" class="custom-radio sr-only" onchange="selectShipping('${courier}', 'REG', 9000, '2-3 hari')" checked>
+                    <label for="ship-default" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-8 flex items-center justify-center bg-white rounded border border-gray-100">
+                                ${getCourierLogo(courier)}
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-800">Reguler</div>
+                                <div class="text-xs text-gray-500 mt-0.5">Estimasi 2-3 hari</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-sm font-bold text-gray-800">Rp 9.000</div>
+                            <div class="w-4 h-4 rounded-full border border-gray-300 radio-indicator transition-all"></div>
+                        </div>
+                    </label>
                 </div>
             `;
+            selectShipping(courier, 'REG', 9000, '2-3 hari');
         }
     }
 
-    function selectShipping(el, courierName, service, cost, etd) {
-        document.querySelectorAll('.shipping-option').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
+    function selectShipping(courierCode, service, cost, etd) {
         selectedShippingCost = cost;
-        selectedCourier = courierName;
+        selectedCourier = courierCode;
         document.querySelector('input[name="shipping_cost"]').value = cost;
         updateTotal();
     }
 
     function updateTotal() {
         const total = productPrice + selectedShippingCost;
-        document.getElementById('total-amount').textContent = 'Rp ' + total.toLocaleString('id-ID');
-    }
-
-    function toggleCod() {
-        const codNote = document.getElementById('cod-note');
-        const isChecked = document.getElementById('cod-checkbox').checked;
-        codNote.style.display = isChecked ? 'block' : 'none';
+        const totalStr = 'Rp ' + total.toLocaleString('id-ID');
+        
+        document.getElementById('summary-shipping').textContent = 'Rp ' + selectedShippingCost.toLocaleString('id-ID');
+        document.getElementById('summary-total').textContent = totalStr;
+        document.getElementById('bottom-total').textContent = totalStr;
     }
 
     function trackCheckout() {
