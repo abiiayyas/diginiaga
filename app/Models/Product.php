@@ -15,6 +15,7 @@ class Product extends Model
         'images',
         'is_active',
         'has_variants',
+        'warehouse_id',
     ];
 
     protected $casts = [
@@ -43,5 +44,10 @@ class Product extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 }

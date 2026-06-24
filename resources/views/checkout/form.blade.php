@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Checkout - {{ $landingPage->headline ?: $landingPage->product->name }}</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
     @if($landingPage->pixel_id)
     <script>
@@ -86,7 +87,7 @@
             @endif
 
             <!-- Alamat Pengiriman -->
-            <div class="bg-white rounded-t-xl shadow-sm overflow-hidden relative">
+            <div class="bg-white rounded-t-xl shadow-sm overflow-visible relative">
                 <div class="p-4">
                     <div class="flex items-center text-brand mb-3">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -108,19 +109,25 @@
                             <label class="block text-xs font-medium text-gray-600 mb-1">Alamat Lengkap</label>
                             <textarea name="customer_address" rows="2" required placeholder="Nama Jalan, RT/RW, Kelurahan, Kec." class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all"></textarea>
                         </div>
-                        <div class="grid grid-cols-6 gap-3">
-                            <div class="col-span-3">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Kota/Kabupaten</label>
-                                <input type="text" name="customer_city" required placeholder="Kota" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
+                        <div x-data="areaSearch()" class="relative">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Kecamatan / Kota (Pilih dari daftar) *</label>
+                            <input type="text" x-model="query" @input.debounce.500ms="search" @focus="isOpen = true" @click.away="isOpen = false" required placeholder="Ketik min. 3 huruf kecamatan..." class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all" autocomplete="off">
+                            
+                            <input type="hidden" name="customer_city" id="customer_city" required>
+                            <input type="hidden" name="customer_province" id="customer_province" required>
+                            <input type="hidden" name="customer_postal_code" id="customer_postal_code" required>
+                            <input type="hidden" name="destination_area_id" id="destination_area_id" required>
+
+                            <div x-show="loading" class="absolute right-3 top-9 text-xs text-gray-400">Loading...</div>
+
+                            <div x-show="isOpen && results.length > 0" class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <template x-for="area in results" :key="area.id">
+                                    <div @click="selectArea(area)" class="px-3 py-2 hover:bg-orange-50 cursor-pointer border-b border-gray-50 last:border-0 text-sm">
+                                        <div class="font-medium text-gray-800" x-text="area.name"></div>
+                                        <div class="text-xs text-gray-500" x-text="area.administrative_division_level_2_name + ', ' + area.administrative_division_level_1_name + ' ' + area.postal_code"></div>
+                                    </div>
+                                </template>
                             </div>
-                            <div class="col-span-3">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Provinsi</label>
-                                <input type="text" name="customer_province" required placeholder="Provinsi" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Kode Pos</label>
-                            <input type="number" name="customer_postal_code" required placeholder="12345" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all">
                         </div>
                     </div>
                 </div>
@@ -167,8 +174,8 @@
                 </div>
                 
                 <div class="mb-3">
-                    <select name="shipping_courier" id="courier-select" required onchange="loadShippingOptions()" class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all appearance-none bg-gray-50">
-                        <option value="">Pilih kurir pengiriman...</option>
+                    <select name="shipping_courier" id="courier-select" required onchange="loadShippingOptions()" disabled class="w-full text-sm py-2 px-3 border border-gray-200 rounded-lg focus:border-brand focus:ring focus:ring-brand focus:ring-opacity-20 outline-none transition-all appearance-none bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <option value="">Pilih area pengiriman terlebih dahulu...</option>
                     </select>
                 </div>
                 
@@ -186,8 +193,8 @@
                 
                 <div class="space-y-2">
                     <div class="relative">
-                        <input type="checkbox" name="is_cod" value="1" id="cod-checkbox" class="peer sr-only" onchange="updateTotal()">
-                        <label for="cod-checkbox" class="flex items-center justify-between w-full p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-brand peer-checked:bg-orange-50/30 transition-all">
+                        <input type="checkbox" name="is_cod" value="1" id="cod-checkbox" class="peer sr-only" onchange="updateTotal()" disabled>
+                        <label for="cod-checkbox" class="flex items-center justify-between w-full p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-brand peer-checked:bg-orange-50/30 transition-all opacity-50 pointer-events-none">
                             <div class="flex items-center">
                                 <div class="w-5 h-5 rounded border border-gray-300 mr-3 flex items-center justify-center peer-checked:bg-brand peer-checked:border-brand">
                                     <svg class="w-3.5 h-3.5 text-white opacity-0 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
@@ -263,20 +270,13 @@
         }
     </style>`);
 
-    async function loadCouriers() {
+    let allShippingData = null;
+
+    function loadCouriers() {
+        // Init state
         const select = document.getElementById('courier-select');
-        try {
-            const res = await fetch('/lp/shipping-options?destination_city=default');
-            const data = await res.json();
-            data.couriers.forEach(courier => {
-                const option = document.createElement('option');
-                option.value = courier.code;
-                option.textContent = courier.name.toUpperCase();
-                select.appendChild(option);
-            });
-        } catch(e) {
-            select.innerHTML = '<option value="">Pilih kurir pengiriman...</option><option value="jne">JNE</option><option value="jnt">J&T Express</option><option value="sicepat">SiCepat</option>';
-        }
+        select.innerHTML = '<option value="">Pilih area pengiriman terlebih dahulu...</option>';
+        select.disabled = true;
     }
 
     function getCourierLogo(code) {
@@ -297,71 +297,91 @@
         return `<span class="font-bold text-gray-700">${code.toUpperCase()}</span>`;
     }
 
-    async function loadShippingOptions() {
-        const courier = document.getElementById('courier-select').value;
+    async function fetchShippingData() {
+        const areaId = document.getElementById('destination_area_id').value;
         const container = document.getElementById('shipping-options');
-        if (!courier) { container.style.display = 'none'; return; }
+        const courierSelect = document.getElementById('courier-select');
 
-        container.innerHTML = '<div class="text-center py-4 text-sm text-gray-500">Memuat tarif ongkos kirim...</div>';
+        if (!areaId) {
+            container.innerHTML = '<div class="text-center py-4 text-sm text-orange-600">Silakan isi dan pilih Area Pengiriman terlebih dahulu.</div>';
+            container.style.display = 'block';
+            courierSelect.disabled = true;
+            return;
+        }
+
+        container.innerHTML = '<div class="text-center py-4 text-sm text-gray-500">Memuat opsi pengiriman...</div>';
         container.style.display = 'block';
+        courierSelect.disabled = true;
 
         try {
-            const res = await fetch('/lp/shipping-options?destination_city=default');
+            const res = await fetch(`/lp/shipping-options?destination_area_id=${areaId}&landing_page_id={{ $landingPage->id }}`);
             const data = await res.json();
-            const courierData = data.couriers.find(c => c.code === courier);
-            if (courierData) {
-                container.innerHTML = courierData.services.map((s, i) => `
-                    <div class="relative">
-                        <input type="radio" name="shipping_service" id="ship-${i}" value="${s.name}" class="custom-radio sr-only" onchange="selectShipping('${courierData.code}', '${s.name}', ${s.cost}, '${s.etd}')">
-                        <label for="ship-${i}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-8 flex items-center justify-center bg-white rounded border border-gray-100">
-                                    ${getCourierLogo(courierData.code)}
-                                </div>
-                                <div>
-                                    <div class="text-sm font-semibold text-gray-800">${s.name} <span class="font-normal text-gray-500">(${s.description})</span></div>
-                                    <div class="text-xs text-gray-500 mt-0.5">Estimasi sampai ${s.etd}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="text-sm font-bold text-gray-800">Rp ${s.cost.toLocaleString('id-ID')}</div>
-                                <div class="w-4 h-4 rounded-full border border-gray-300 radio-indicator transition-all"></div>
-                            </div>
-                        </label>
-                    </div>
-                `).join('');
-                
-                // auto select first
-                if (courierData.services.length > 0) {
-                    const firstOption = document.getElementById('ship-0');
-                    if (firstOption) {
-                        firstOption.checked = true;
-                        selectShipping(courierData.code, courierData.services[0].name, courierData.services[0].cost, courierData.services[0].etd);
-                    }
-                }
+            allShippingData = data.couriers;
+
+            if (allShippingData && allShippingData.length > 0) {
+                courierSelect.innerHTML = allShippingData.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+                courierSelect.disabled = false;
+                loadShippingOptions();
+            } else {
+                courierSelect.innerHTML = '<option value="">Tidak ada kurir tersedia</option>';
+                container.innerHTML = '<div class="text-center py-4 text-sm text-red-500">Tidak ada kurir tersedia untuk area ini.</div>';
             }
         } catch(e) {
-            container.innerHTML = `
+            console.error(e);
+            container.innerHTML = '<div class="text-center py-4 text-sm text-red-500">Gagal memuat tarif ongkos kirim. Silakan coba lagi.</div>';
+        }
+    }
+
+    function loadShippingOptions() {
+        const courier = document.getElementById('courier-select').value;
+        const container = document.getElementById('shipping-options');
+
+        if (!allShippingData) return;
+
+        const courierData = allShippingData.find(c => c.code === courier);
+        if (courierData) {
+            // Update COD availability
+            const codCheckbox = document.getElementById('cod-checkbox');
+            const codLabel = document.querySelector('label[for="cod-checkbox"]');
+            
+            if (courierData.supports_cod !== false) {
+                codCheckbox.disabled = false;
+                codLabel.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                codCheckbox.checked = false;
+                codCheckbox.disabled = true;
+                codLabel.classList.add('opacity-50', 'pointer-events-none');
+                updateTotal();
+            }
+
+            container.innerHTML = courierData.services.map((s, i) => `
                 <div class="relative">
-                    <input type="radio" name="shipping_service" id="ship-default" value="REG" class="custom-radio sr-only" onchange="selectShipping('${courier}', 'REG', 9000, '2-3 hari')" checked>
-                    <label for="ship-default" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50">
+                    <input type="radio" name="shipping_service" id="ship-${i}" value="${s.name}" class="custom-radio sr-only" onchange="selectShipping('${courierData.code}', '${s.name}', ${s.cost}, '${s.etd}')">
+                    <label for="ship-${i}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer transition-all hover:bg-gray-50">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-8 flex items-center justify-center bg-white rounded border border-gray-100">
-                                ${getCourierLogo(courier)}
+                                ${getCourierLogo(courierData.code)}
                             </div>
                             <div>
-                                <div class="text-sm font-semibold text-gray-800">Reguler</div>
-                                <div class="text-xs text-gray-500 mt-0.5">Estimasi 2-3 hari</div>
+                                <div class="text-sm font-semibold text-gray-800">${s.name} <span class="font-normal text-gray-500">(${s.description})</span></div>
+                                <div class="text-xs text-gray-500 mt-0.5">Estimasi sampai ${s.etd}</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="text-sm font-bold text-gray-800">Rp 9.000</div>
+                            <div class="text-sm font-bold text-gray-800">Rp ${s.cost.toLocaleString('id-ID')}</div>
                             <div class="w-4 h-4 rounded-full border border-gray-300 radio-indicator transition-all"></div>
                         </div>
                     </label>
                 </div>
-            `;
-            selectShipping(courier, 'REG', 9000, '2-3 hari');
+            `).join('');
+            
+            if (courierData.services.length > 0) {
+                const firstOption = document.getElementById('ship-0');
+                if (firstOption) {
+                    firstOption.checked = true;
+                    selectShipping(courierData.code, courierData.services[0].name, courierData.services[0].cost, courierData.services[0].etd);
+                }
+            }
         }
     }
 
@@ -384,6 +404,44 @@
     function trackCheckout() {
         if (pixelId) {
             fbq('track', 'InitiateCheckout');
+        }
+    }
+
+    function areaSearch() {
+        return {
+            query: '',
+            results: [],
+            loading: false,
+            isOpen: false,
+            search() {
+                if (this.query.length < 3) {
+                    this.results = [];
+                    this.isOpen = false;
+                    return;
+                }
+                this.loading = true;
+                fetch(`/lp/search-area?q=${this.query}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        this.results = data;
+                        this.isOpen = true;
+                        this.loading = false;
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        this.loading = false;
+                    });
+            },
+            selectArea(area) {
+                this.query = area.name + ', ' + area.administrative_division_level_2_name;
+                document.getElementById('customer_city').value = area.administrative_division_level_2_name;
+                document.getElementById('customer_province').value = area.administrative_division_level_1_name;
+                document.getElementById('customer_postal_code').value = area.postal_code;
+                document.getElementById('destination_area_id').value = area.id;
+                this.isOpen = false;
+                
+                fetchShippingData();
+            }
         }
     }
 

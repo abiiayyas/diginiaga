@@ -13,7 +13,13 @@ class TrackingController extends Controller
             ->where('order_number', $orderNumber)
             ->firstOrFail();
 
-        return view('tracking.show', compact('order'));
+        $trackingData = null;
+        if ($order && $order->shipment) {
+            $mengantar = app(\App\Services\MengantarService::class);
+            $trackingData = $mengantar->getTracking($order->shipment->tracking_number);
+        }
+
+        return view('tracking.show', compact('order', 'trackingData'));
     }
 
     public function track(Request $request)
@@ -30,6 +36,12 @@ class TrackingController extends Controller
             return back()->with('error', 'Order tidak ditemukan. Periksa kembali nomor order Anda.');
         }
 
-        return view('tracking.show', compact('order'));
+        $trackingData = null;
+        if ($order && $order->shipment) {
+            $mengantar = app(\App\Services\MengantarService::class);
+            $trackingData = $mengantar->getTracking($order->shipment->tracking_number);
+        }
+
+        return view('tracking.show', compact('order', 'trackingData'));
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LPController;
 use App\Http\Controllers\ProfileController;
@@ -35,7 +36,7 @@ Route::middleware(['auth', 'role:admin,operator'])->prefix('admin')->name('admin
     Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
     Route::patch('orders/{order}/tracking', [OrderController::class, 'updateTracking'])->name('orders.update-tracking');
     Route::patch('orders/{order}/supplier-ordered', [OrderController::class, 'markSupplierOrdered'])->name('orders.supplier-ordered');
-    Route::post('orders/{order}/biteship', [OrderController::class, 'createBiteshipShipment'])->name('orders.biteship');
+    Route::post('orders/{order}/mengantar', [OrderController::class, 'createMengantarShipment'])->name('orders.mengantar');
     Route::get('orders/{order}/copy-supplier-data', [OrderController::class, 'copySupplierData'])->name('orders.copy-supplier-data');
     Route::resource('orders', OrderController::class)->except(['create', 'store', 'edit', 'destroy']);
 
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'role:admin,operator'])->prefix('admin')->name('admin
     Route::patch('settings/password', [\App\Http\Controllers\Admin\SettingController::class, 'updatePassword'])->name('settings.password');
 
     Route::resource('campaigns', CampaignController::class)->except(['show']);
+    Route::get('warehouses/search-area', [WarehouseController::class, 'searchArea'])->name('warehouses.search-area');
+    Route::resource('warehouses', WarehouseController::class)->except(['show']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -63,6 +66,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/p/{slug}', [LPController::class, 'show'])->name('lp.show');
 
 Route::post('/lp/create-order', [LPController::class, 'createOrder'])->name('lp.order.create');
+Route::get('/lp/search-area', [LPController::class, 'searchArea'])->name('lp.search-area');
 Route::get('/lp/shipping-options', [LPController::class, 'getShippingOptions'])->name('lp.shipping');
 
 Route::get('/checkout/form/{slug}', [CheckoutController::class, 'showForm'])->name('checkout.form');
@@ -76,7 +80,7 @@ Route::get('/track/{orderNumber}', [TrackingController::class, 'show'])->name('t
 Route::post('/track', [TrackingController::class, 'track'])->name('tracking.lookup');
 
 Route::post('/webhook/midtrans', [\App\Http\Controllers\PaymentWebhookController::class, 'handle'])
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->name('webhook.midtrans');
 
 require __DIR__.'/auth.php';

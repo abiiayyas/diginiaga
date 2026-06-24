@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Services\BiteshipService;
+use App\Services\MengantarService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
@@ -81,7 +81,7 @@ class OrderController extends Controller
         return back()->with('success', 'Status order berhasil diupdate.');
     }
 
-    public function updateTracking(Request $request, Order $order, BiteshipService $biteship, WhatsAppService $whatsapp)
+    public function updateTracking(Request $request, Order $order, MengantarService $mengantar, WhatsAppService $whatsapp)
     {
         $request->validate([
             'tracking_number' => 'required|string|max:100',
@@ -116,17 +116,39 @@ class OrderController extends Controller
         return back()->with('success', 'Resi berhasil diinput, status diupdate, dan notifikasi WA dikirim ke customer.');
     }
 
-    public function createBiteshipShipment(Order $order, BiteshipService $biteship, WhatsAppService $whatsapp)
+    public function createMengantarShipment(Order $order, MengantarService $mengantar, WhatsAppService $whatsapp)
     {
-        $result = $biteship->createShipment($order);
+        $result = $mengantar->createShipment($order);
 
-        if (!$result) {
-            return back()->with('error', 'Gagal membuat shipment di Biteship. Input resi manual jika perlu.');
+        if (!$result || (!isset($result['ORDER_ID']) && !isset($result['cnote_no']))) {
+            return back()->with('error', 'Gagal membuat shipment di Mengantar. Input resi manual jika perlu.');
         }
+
+        $trackingNumber = $result['cnote_no'] ?? $result['ORDER_ID'];
+
+        $shipment = $order->shipment;
+        if ($shipment) {
+            $shipment->update([
+                'tracking_number' => $trackingNumber,
+                'status' => 'shipped',
+                'shipped_at' => now(),
+            ]);
+        } else {
+            $order->shipment()->create([
+                'courier_name' => $order->shipping_courier,
+                'tracking_number' => $trackingNumber,
+                'status' => 'shipped',
+                'shipped_at' => now(),
+            ]);
+        }
+
+        $order->update([
+            'order_status' => 'shipped'
+        ]);
 
         $whatsapp->sendTrackingNumber($order->fresh());
 
-        return back()->with('success', 'Shipment berhasil dibuat di Biteship dan notifikasi WA dikirim.');
+        return back()->with('success', 'Shipment berhasil dibuat di Mengantar dan notifikasi WA dikirim.');
     }
 
     public function markSupplierOrdered(Order $order)

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LandingPage;
 use App\Models\Order;
-use App\Services\BiteshipService;
+use App\Services\MengantarService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
@@ -31,23 +31,42 @@ class LPController extends Controller
         return view('lp.show', compact('landingPage', 'utmQuery'));
     }
 
-    public function getShippingOptions(Request $request, BiteshipService $biteship)
+    public function searchArea(Request $request, MengantarService $mengantar)
+    {
+        $query = $request->input('q');
+
+        if (strlen($query) < 3) {
+            return response()->json([]);
+        }
+
+        $areas = $mengantar->searchArea($query);
+        return response()->json($areas);
+    }
+
+    public function getShippingOptions(Request $request, MengantarService $mengantar)
     {
         $request->validate([
-            'destination_city' => 'required|string',
+            'destination_area_id' => 'required|string',
+            'landing_page_id' => 'required|exists:landing_pages,id',
         ]);
 
-        $couriers = $biteship->getShippingRates(
-            ['area_id' => config('services.biteship.origin_area_id', 'IDCGK101')],
+        $landingPage = \App\Models\LandingPage::with('product.warehouse')->find($request->landing_page_id);
+        $warehouse = $landingPage->product->warehouse;
+        
+        $originAreaId = $warehouse && $warehouse->mengantar_area_id 
+            ? $warehouse->mengantar_area_id 
+            : null;
+
+        $couriers = $mengantar->getShippingRates(
+            ['area_id' => $originAreaId],
             [
-                'city' => $request->destination_city,
-                'couriers' => ['jne', 'jnt', 'sicepat'],
+                'area_id' => $request->destination_area_id,
             ],
             [[
-                'name' => 'Produk',
+                'name' => $landingPage->product->name,
                 'weight' => 1000,
                 'quantity' => 1,
-                'value' => 100000,
+                'value' => $landingPage->product->sell_price,
             ]]
         );
 
@@ -65,6 +84,7 @@ class LPController extends Controller
             'customer_city' => 'required|string|max:100',
             'customer_province' => 'required|string|max:100',
             'customer_postal_code' => 'required|string|max:10',
+            'destination_area_id' => 'required|string|max:255',
             'shipping_courier' => 'required|string|max:50',
             'shipping_service' => 'nullable|string|max:50',
             'shipping_cost' => 'nullable|numeric|min:0',
@@ -79,7 +99,7 @@ class LPController extends Controller
             $request->validate(['product_variant_id' => 'required|exists:product_variants,id']);
             $variant = \App\Models\ProductVariant::findOrFail($validated['product_variant_id']);
             if ($variant->product_id !== $landingPage->product_id) {
-                abort(400, 'Invalid variant');
+                return response()->json(['message' => 'Variant tidak valid.'], 422);
             }
         }
 
@@ -100,6 +120,7 @@ class LPController extends Controller
             'customer_city' => $validated['customer_city'],
             'customer_province' => $validated['customer_province'],
             'customer_postal_code' => $validated['customer_postal_code'],
+            'customer_area_id' => $validated['destination_area_id'],
             'qty' => $qty,
             'unit_price' => $unitPrice,
             'shipping_courier' => $validated['shipping_courier'],

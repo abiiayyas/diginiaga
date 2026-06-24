@@ -10,6 +10,18 @@
         <div class="mb-4"><label class="block text-sm font-medium mb-2">Nama Produk</label><input type="text" name="name" value="{{ old('name') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">@error('name')<p class="text-red-500 text-xs mt-1">{{$message}}</p>@enderror</div>
         <div class="mb-4"><label class="block text-sm font-medium mb-2">SKU Supplier</label><input type="text" name="sku_supplier" value="{{ old('sku_supplier') }}" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
         <div class="mb-4"><label class="block text-sm font-medium mb-2">Deskripsi</label><textarea name="description" rows="3" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('description') }}</textarea></div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Gudang Pengiriman <span class="text-red-500">*</span></label>
+            <select name="warehouse_id" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="">-- Pilih Gudang --</option>
+                @foreach($warehouses as $warehouse)
+                    <option value="{{ $warehouse->id }}" {{ old('warehouse_id') == $warehouse->id ? 'selected' : '' }}>
+                        {{ $warehouse->name }} ({{ $warehouse->city }})
+                    </option>
+                @endforeach
+            </select>
+            @error('warehouse_id')<p class="text-red-500 text-xs mt-1">{{$message}}</p>@enderror
+        </div>
         <div class="grid grid-cols-2 gap-4 mb-4">
             <div><label class="block text-sm font-medium mb-2">Harga Jual (Rp)</label><input type="number" name="sell_price" value="{{ old('sell_price') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
             <div><label class="block text-sm font-medium mb-2">Harga Modal (Rp)</label><input type="number" name="cost_price" value="{{ old('cost_price') }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>

@@ -27,6 +27,14 @@
         .tracking-search input { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; margin-bottom: 12px; }
         .tracking-search button { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 12px; padding: 8px 12px; background: #fee2e2; border-radius: 8px; }
+        .timeline { margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+        .timeline h3 { font-size: 1.1rem; margin-bottom: 16px; color: #111827; }
+        .timeline-item { position: relative; padding-left: 24px; margin-bottom: 16px; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item::before { content: ''; position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; border: 2px solid #eff6ff; }
+        .timeline-item:not(:last-child)::after { content: ''; position: absolute; left: 4px; top: 14px; bottom: -16px; width: 2px; background: #e5e7eb; }
+        .timeline-time { font-size: 0.8rem; color: #6b7280; margin-bottom: 2px; }
+        .timeline-desc { font-size: 0.95rem; color: #374151; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -41,9 +49,26 @@
             @if($order->shipment)
             <div class="detail-row"><span class="label">Kurir</span><span class="value">{{ $order->shipment->courier_name }}</span></div>
             <div class="detail-row"><span class="label">No. Resi</span><span class="value" style="font-weight:700;color:#2563eb">{{ $order->shipment->tracking_number }}</span></div>
-            <div class="detail-row"><span class="label">Status Kirim</span><span class="value">{{ $order->shipment->status }}</span></div>
+            <div class="detail-row"><span class="label">Status Kirim</span><span class="value">{{ strtoupper($trackingData['status'] ?? $order->shipment->status) }}</span></div>
             @endif
             <div class="detail-row"><span class="label">Tanggal Order</span><span class="value">{{ $order->created_at->format('d M Y H:i') }}</span></div>
+            
+            @if(isset($trackingData) && isset($trackingData['history']) && is_array($trackingData['history']) && count($trackingData['history']) > 0)
+            <div class="timeline">
+                <h3>Riwayat Pengiriman</h3>
+                @foreach(array_reverse($trackingData['history']) as $item)
+                    <div class="timeline-item">
+                        <div class="timeline-time">{{ \Carbon\Carbon::parse($item['date'] ?? $item['updatedAt'] ?? $item['created_at'] ?? now())->format('d M Y H:i') }}</div>
+                        <div class="timeline-desc">{{ $item['note'] ?? $item['description'] ?? $item['status'] ?? 'Update status' }}</div>
+                    </div>
+                @endforeach
+            </div>
+            @elseif(isset($trackingData))
+            <div class="timeline">
+                <h3>Riwayat Pengiriman</h3>
+                <p style="text-align:center;font-size:0.9rem;color:#6b7280;padding:20px 0;">Menunggu pembaruan lokasi dari kurir...</p>
+            </div>
+            @endif
         </div>
         
         <div class="tracking-search">

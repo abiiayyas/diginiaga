@@ -20,7 +20,8 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('admin.products.create');
+        $warehouses = \App\Models\Warehouse::orderBy('name')->get();
+        return view('admin.products.create', compact('warehouses'));
     }
 
     public function store(Request $request)
@@ -33,6 +34,7 @@ class ProductController extends Controller
             'cost_price' => 'required|numeric|min:0',
             'images' => 'nullable|array',
             'is_active' => 'boolean',
+            'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
         if ($request->hasFile('images')) {
@@ -54,7 +56,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $product->load(['options.optionValues', 'variants.optionValues']);
-        return view('admin.products.edit', compact('product'));
+        $warehouses = \App\Models\Warehouse::orderBy('name')->get();
+        return view('admin.products.edit', compact('product', 'warehouses'));
     }
 
     public function update(Request $request, Product $product)
@@ -67,6 +70,7 @@ class ProductController extends Controller
             'cost_price' => 'required|numeric|min:0',
             'images' => 'nullable|array',
             'is_active' => 'boolean',
+            'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
         if ($request->hasFile('images')) {

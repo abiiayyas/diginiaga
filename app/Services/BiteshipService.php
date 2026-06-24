@@ -225,4 +225,15 @@ class BiteshipService
             ]],
         ];
     }
+
+    public function searchArea(string $query): array
+    {
+        $result = $this->request('get', '/v1/maps/areas', [
+            'countries' => 'ID',
+            'input' => $query,
+            'type' => 'single'
+        ]);
+
+        return $result['areas'] ?? [];
+    }
 }

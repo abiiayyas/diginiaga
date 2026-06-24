@@ -52,12 +52,9 @@ return [
         'access_token' => env('META_ACCESS_TOKEN'),
     ],
 
-    'biteship' => [
-        'api_key' => env('BITESHIP_API_KEY'),
-        'base_url' => env('BITESHIP_BASE_URL', 'https://api.biteship.com'),
-        'origin_area_id' => env('BITESHIP_ORIGIN_AREA_ID', 'IDCGK101'),
-        'origin_address' => env('BITESHIP_ORIGIN_ADDRESS'),
-        'origin_phone' => env('BITESHIP_ORIGIN_PHONE'),
+    'mengantar' => [
+        'api_key' => env('MENGANTAR_API_KEY'),
+        'base_url' => env('MENGANTAR_BASE_URL', 'https://app.mengantar.com'),
     ],
 
 ];

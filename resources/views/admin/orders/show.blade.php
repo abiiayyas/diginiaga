@@ -90,10 +90,10 @@
 
         @if(in_array($order->order_status, ['paid', 'processing']))
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3">Biteship</h3>
-            <form action="{{ route('admin.orders.biteship', $order) }}" method="POST">
+            <h3 class="text-sm font-semibold text-gray-900 mb-3">Mengantar</h3>
+            <form action="{{ route('admin.orders.mengantar', $order) }}" method="POST">
                 @csrf
-                <button type="submit" class="w-full py-2 px-4 inline-flex items-center justify-center gap-x-2 rounded-lg text-sm font-medium bg-orange-600 text-white hover:bg-orange-700">Buat Shipment Biteship</button>
+                <button type="submit" class="w-full py-2 px-4 inline-flex items-center justify-center gap-x-2 rounded-lg text-sm font-medium bg-orange-600 text-white hover:bg-orange-700">Buat Shipment Mengantar</button>
             </form>
         </div>
         @endif

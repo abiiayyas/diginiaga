@@ -17,6 +17,7 @@ class Order extends Model
         'customer_city',
         'customer_province',
         'customer_postal_code',
+        'customer_area_id',
         'qty',
         'unit_price',
         'shipping_courier',
