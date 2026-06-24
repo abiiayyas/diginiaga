@@ -12,6 +12,9 @@
     <!-- Tabs Header -->
     <div class="border-b border-gray-200">
         <nav class="flex space-x-6" aria-label="Tabs">
+            <button @click="activeTab = 'toko'" :class="activeTab === 'toko' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+                Toko
+            </button>
             <button @click="activeTab = 'profil'" :class="activeTab === 'profil' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
                 Profil & Password
             </button>
@@ -30,6 +33,29 @@
     <!-- Tabs Content -->
     <div class="mt-6">
         
+        <!-- Tab: Toko -->
+        <div x-show="activeTab === 'toko'" x-cloak>
+            <form method="post" action="{{ route('admin.settings.update') }}">
+                @csrf
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">Informasi Toko</h3>
+                    <p class="text-sm text-gray-500 mb-6">Nama toko akan tampil di halaman landing page.</p>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Toko</label>
+                            <input type="text" name="store_name" value="{{ ["/store_name/"] ?? config("/app.name/", "Toko Resmi") }}" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Diginiaga Shop">
+                            <p class="text-[11px] text-gray-400 mt-1">Nama ini akan muncul di bagian "Toko Resmi" pada landing page.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-6 rounded-lg text-sm transition-colors">Simpan Pengaturan</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <!-- Tab: Profil -->
         <div x-show="activeTab === 'profil'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
