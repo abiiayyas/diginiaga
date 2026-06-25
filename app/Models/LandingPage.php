@@ -30,6 +30,7 @@ class LandingPage extends Model
         'is_active',
         'variant_name',
         'visits',
+        'template',
     ];
 
     protected $casts = [

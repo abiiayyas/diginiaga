@@ -51,6 +51,7 @@ class LandingPageController extends Controller
             'domain' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'variant_name' => 'nullable|string|max:255',
+            'template' => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('cover_image')) {
@@ -143,6 +144,7 @@ class LandingPageController extends Controller
             'domain' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'variant_name' => 'nullable|string|max:255',
+            'template' => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('cover_image')) {

@@ -25,6 +25,33 @@
             </div>
         </div>
 
+        {{-- Template Selection --}}
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <label class="block text-sm font-medium text-gray-800 mb-3">Template Tampilan</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <label class="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border cursor-pointer hover:border-blue-400 transition-colors" :class="template === 'shopee' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-200'">
+                    <input type="radio" name="template" value="shopee" x-model="template" class="sr-only" checked>
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs" style="background: #ee4d2d">S</div>
+                    <span class="text-xs font-medium text-gray-700">Shopee</span>
+                </label>
+                <label class="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border cursor-pointer hover:border-blue-400 transition-colors" :class="template === 'tokopedia' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-200'">
+                    <input type="radio" name="template" value="tokopedia" x-model="template" class="sr-only">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs" style="background: #03AC0E">T</div>
+                    <span class="text-xs font-medium text-gray-700">Tokopedia</span>
+                </label>
+                <label class="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border cursor-pointer hover:border-blue-400 transition-colors" :class="template === 'blibli' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-200'">
+                    <input type="radio" name="template" value="blibli" x-model="template" class="sr-only">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs" style="background: #0095DA">B</div>
+                    <span class="text-xs font-medium text-gray-700">Blibli</span>
+                </label>
+                <label class="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border cursor-pointer hover:border-blue-400 transition-colors" :class="template === 'tiktokshop' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-200'">
+                    <input type="radio" name="template" value="tiktokshop" x-model="template" class="sr-only">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs" style="background: #FF2C55">T</div>
+                    <span class="text-xs font-medium text-gray-700">TikTok Shop</span>
+                </label>
+            </div>
+        </div>
+
         {{-- Hero --}}
         <div>
             <label class="block text-sm font-medium text-gray-800 mb-2">Headline</label>
@@ -323,6 +350,7 @@ function lpEditor(initial) {
         scroll_target: initial.scroll_target || '',
         price: initial.price || 0,
         product_id: initial.product_id || '',
+        template: initial.template || 'shopee',
         cover_image_url: initial.cover_image_url,
         sliderPreviews: initial.sliderPreviews || [],
         sliderIdx: 0,

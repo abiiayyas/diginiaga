@@ -21,6 +21,7 @@
                     <th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">LP</th>
                     <th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Produk</th>
                     <th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Slug</th>
+                    <th class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Template</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Order</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
@@ -33,6 +34,12 @@
                     <td class="px-6 py-3 text-sm text-gray-500">{{ $lp->product->name ?? '-' }}</td>
                     <td class="px-6 py-3 text-sm">
                         <a href="{{ url('/p/' . $lp->slug) }}" target="_blank" class="text-blue-600 hover:underline">/p/{{ $lp->slug }}</a>
+                    </td>
+                    <td class="px-6 py-3 text-sm">
+                        @php
+                        $templateLabels = ['shopee' => 'Shopee', 'tokopedia' => 'Tokopedia', 'blibli' => 'Blibli', 'tiktokshop' => 'TikTok Shop'];
+                        @endphp
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">{{ $templateLabels[$lp->template] ?? 'Shopee' }}</span>
                     </td>
                     <td class="px-6 py-3 text-sm text-center">{{ $lp->orders_count }}</td>
                     <td class="px-6 py-3 text-sm text-center">
@@ -52,7 +59,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="px-6 py-12 text-center text-sm text-gray-500">Belum ada landing page.</td></tr>
+                <tr><td colspan="7" class="px-6 py-12 text-center text-sm text-gray-500">Belum ada landing page.</td></tr>
                 @endforelse
             </tbody>
         </table>

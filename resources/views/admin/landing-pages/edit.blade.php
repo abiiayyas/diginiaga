@@ -24,6 +24,7 @@ $lpData = [
         return filter_var($img, FILTER_VALIDATE_URL) ? $img : asset('storage/'.$img);
     }, $existingSliderImages)),
     'existingFaqs' => $existingFaqs,
+    'template' => old('template', $landingPage->template),
 ];
 @endphp
 <div x-data='lpEditor(@json($lpData))' class="h-[calc(100vh-140px)]">

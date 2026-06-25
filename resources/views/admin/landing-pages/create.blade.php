@@ -22,6 +22,7 @@ $lpData = [
     'cover_image_url' => null,
     'sliderPreviews' => [],
     'existingFaqs' => [],
+    'template' => 'shopee',
 ];
 @endphp
 <div x-data='lpEditor(@json($lpData))' class="h-[calc(100vh-140px)]">
