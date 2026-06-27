@@ -42,6 +42,8 @@ Route::middleware(['auth', 'role:admin,operator'])->prefix('admin')->name('admin
 
     Route::get('notification-templates', [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'index'])
         ->name('notification-templates');
+    Route::post('notification-templates', [\App\Http\Controllers\Admin\NotificationTemplateController::class, 'update'])
+        ->name('notification-templates.update');
 
     Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('analytics/campaigns', [AnalyticsController::class, 'campaigns'])->name('analytics.campaigns');

@@ -5,12 +5,12 @@
 @section('content')
 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
     <div>
-        <h1 class="text-2xl font-bold text-gray-900">Performa Landing Pages</h1>
-        <p class="text-sm text-gray-500 mt-1">Conversion rate & revenue per LP</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Performa Landing Pages</h1>
+        <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">Conversion rate & revenue per LP</p>
     </div>
     <form method="GET" class="flex gap-2">
-        <input type="date" name="date_from" value="{{ $dateFrom }}" class="py-2 px-3 block border-gray-200 rounded-lg text-sm">
-        <input type="date" name="date_to" value="{{ $dateTo }}" class="py-2 px-3 block border-gray-200 rounded-lg text-sm">
+        <input type="date" name="date_from" value="{{ $dateFrom }}" class="py-2 px-3 block border-gray-200 dark:border-slate-700 rounded-lg text-sm">
+        <input type="date" name="date_to" value="{{ $dateTo }}" class="py-2 px-3 block border-gray-200 dark:border-slate-700 rounded-lg text-sm">
         <button type="submit" class="py-2 px-4 inline-flex items-center gap-x-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">Filter</button>
     </form>
 </div>
@@ -26,42 +26,42 @@
     ];
     @endphp
     @foreach($cards as $card)
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $card['label'] }}</p>
+    <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-5">
+        <p class="text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{{ $card['label'] }}</p>
         <p class="mt-2 text-2xl font-bold text-{{$card['color']}}-600">{{ $card['value'] }}</p>
     </div>
     @endforeach
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-        <h3 class="text-sm font-semibold text-gray-900 mb-4">Order Harian</h3>
+    <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-slate-100 mb-4">Order Harian</h3>
         <canvas id="ordersChart" height="200"></canvas>
     </div>
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-        <h3 class="text-sm font-semibold text-gray-900 mb-4">Revenue Harian</h3>
+    <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-slate-100 mb-4">Revenue Harian</h3>
         <canvas id="revenueChart" height="200"></canvas>
     </div>
 </div>
 
-<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200"><h3 class="text-sm font-semibold text-gray-900">Performa per LP</h3></div>
+<div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700"><h3 class="text-sm font-semibold text-gray-900 dark:text-slate-100">Performa per LP</h3></div>
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+            <thead class="bg-gray-50 dark:bg-slate-800/50">
                 <tr>
-                    <th class="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase">LP</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Kunjungan</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Order</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Sukses</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Conv.</th>
-                    <th class="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase">Revenue</th>
+                    <th class="px-4 py-3 text-start text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">LP</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">Kunjungan</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">Order</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">Sukses</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">Conv.</th>
+                    <th class="px-4 py-3 text-end text-xs font-medium text-gray-500 dark:text-slate-400 uppercase">Revenue</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 dark:divide-slate-700">
                 @forelse($landingPages as $lp)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $lp->headline ?: $lp->product->name }}<div class="text-xs text-gray-400">/p/{{ $lp->slug }}</div></td>
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 dark:bg-slate-800/50">
+                    <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-slate-100">{{ $lp->headline ?: $lp->product->name }}<div class="text-xs text-gray-400 dark:text-slate-500">/p/{{ $lp->slug }}</div></td>
                     <td class="px-4 py-3 text-sm text-center">{{ number_format($lp->visits,0,',','.') }}</td>
                     <td class="px-4 py-3 text-sm text-center">{{ $lp->total_orders }}</td>
                     <td class="px-4 py-3 text-sm text-center text-teal-600 font-medium">{{ $lp->paid_orders }}</td>
@@ -69,7 +69,7 @@
                     <td class="px-4 py-3 text-sm text-end font-medium">Rp {{ number_format($lp->total_revenue??0,0,',','.') }}</td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="px-6 py-12 text-center text-sm text-gray-500">Belum ada data.</td></tr>
+                <tr><td colspan="6" class="px-6 py-12 text-center text-sm text-gray-500 dark:text-slate-400">Belum ada data.</td></tr>
                 @endforelse
             </tbody>
         </table>

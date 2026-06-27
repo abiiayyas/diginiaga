@@ -35,16 +35,16 @@ $lpData = [
             @csrf @method('PUT')
             
             <div class="flex-1 overflow-y-auto">
-                <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 lg:p-8">
+                <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm p-6 lg:p-8">
                     @include('admin.landing-pages.partials._form')
                 </div>
             </div>
 
             {{-- Sticky Footer --}}
-            <div class="fixed bottom-0 left-0 right-0 lg:left-64 bg-white border-t px-6 py-4 flex justify-between items-center z-50">
-                <a href="{{ route('admin.landing-pages.index') }}" class="py-2.5 px-4 rounded-lg text-sm font-medium bg-white text-gray-600 hover:bg-gray-50 transition-colors">Batal</a>
+            <div class="fixed bottom-0 left-0 right-0 lg:left-64 bg-white dark:bg-slate-900 border-t px-6 py-4 flex justify-between items-center z-50">
+                <a href="{{ route('admin.landing-pages.index') }}" class="py-2.5 px-4 rounded-lg text-sm font-medium bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 dark:bg-slate-800/50 transition-colors">Batal</a>
                 <div class="flex gap-3">
-                    <button type="submit" name="is_active" value="0" class="py-2.5 px-4 rounded-lg text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Save as draft</button>
+                    <button type="submit" name="is_active" value="0" class="py-2.5 px-4 rounded-lg text-sm font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:text-slate-100 transition-colors">Save as draft</button>
                     <button type="button" @click="step = 2; window.scrollTo(0,0);" class="py-2.5 px-6 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors">Next: Preview</button>
                 </div>
             </div>
@@ -54,14 +54,14 @@ $lpData = [
     {{-- STEP 2: Preview --}}
     <div x-show="step === 2" style="display: none;" class="h-full flex flex-col pb-24">
         <div class="flex-1 overflow-y-auto flex justify-center pb-8">
-            <div class="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl bg-white shadow-xl rounded-xl overflow-hidden shrink-0 mt-6 border">
+            <div class="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl bg-white dark:bg-slate-900 shadow-xl rounded-xl overflow-hidden shrink-0 mt-6 border">
                 @include('admin.landing-pages.partials._preview')
             </div>
         </div>
 
         {{-- Preview Footer --}}
-        <div class="fixed bottom-0 left-0 right-0 lg:left-64 bg-white border-t px-6 py-4 flex justify-end gap-3 z-50">
-            <button type="button" @click="step = 1" class="py-2.5 px-4 rounded-lg text-sm font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">Kembali Edit</button>
+        <div class="fixed bottom-0 left-0 right-0 lg:left-64 bg-white dark:bg-slate-900 border-t px-6 py-4 flex justify-end gap-3 z-50">
+            <button type="button" @click="step = 1" class="py-2.5 px-4 rounded-lg text-sm font-medium bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800/50 dark:bg-slate-800/50 transition-colors">Kembali Edit</button>
             <button type="button" @click="document.getElementById('lpForm').submit()" class="py-2.5 px-6 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors">Simpan & Terbitkan</button>
         </div>
     </div>

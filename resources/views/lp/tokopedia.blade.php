@@ -344,9 +344,10 @@
             </a>
             @endif
 
-            <a id="cta-btn-bottom" href="{{ route('checkout.form', ['slug' => $landingPage->slug]) }}@if(isset($utmQuery) && $utmQuery)?{{ $utmQuery }}@endif"
-               class="flex-1 flex justify-center items-center rounded-lg text-white font-bold text-sm h-11 hover:opacity-90 transition-opacity shadow-md"
-               style="background-color: #03AC0E;">
+            <a id="cta-btn" href="{{ route('checkout.form', ['slug' => $landingPage->slug]) }}@if(isset($utmQuery) && $utmQuery)?{{ $utmQuery }}@endif"
+               class="flex-1 flex justify-center items-center rounded-lg text-white font-bold text-sm h-10 hover:opacity-90 transition-opacity shadow-sm"
+               style="background-color: {{ $landingPage->cta_color }}"
+               onclick="if(typeof fbq === 'function') fbq('track', 'AddToCart');">
                 {{ $landingPage->cta_text ?: 'Beli Sekarang' }}
             </a>
         </div>
