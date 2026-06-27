@@ -61,7 +61,23 @@
             </div>
 
             <!-- Table Kombinasi -->
-            <div class="mt-6 overflow-x-auto" x-show="variants.length > 0">
+            <div class="mt-4 flex gap-4 items-end bg-gray-50 p-4 rounded-lg" x-show="variants.length > 0">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Set Hrg Jual</label>
+                    <input type="number" x-model="bulkSellPrice" class="py-1 px-2 border-gray-200 rounded text-sm focus:border-blue-500 focus:ring-blue-500 w-32">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Set Hrg Modal</label>
+                    <input type="number" x-model="bulkCostPrice" class="py-1 px-2 border-gray-200 rounded text-sm focus:border-blue-500 focus:ring-blue-500 w-32">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Set Stok</label>
+                    <input type="number" x-model="bulkStock" class="py-1 px-2 border-gray-200 rounded text-sm focus:border-blue-500 focus:ring-blue-500 w-24">
+                </div>
+                <button type="button" @click="applyBulk" class="py-1.5 px-3 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Terapkan ke Semua</button>
+            </div>
+
+            <div class="mt-4 overflow-x-auto" x-show="variants.length > 0">
                 <table class="min-w-full divide-y divide-gray-200 bg-white rounded-lg overflow-hidden border border-gray-200">
                     <thead class="bg-gray-100">
                         <tr>
@@ -101,6 +117,9 @@ function variantManager() {
         hasVariants: {{ $product->has_variants ? 'true' : 'false' }},
         options: [],
         variants: [],
+        bulkSellPrice: '',
+        bulkCostPrice: '',
+        bulkStock: '',
 
         init() {
             const existingOptions = @json($product->options);
@@ -146,6 +165,21 @@ function variantManager() {
             if (this.hasVariants && this.variants.length === 0) {
                 this.generateVariants();
             }
+            
+            // Auto generate empty SKUs
+            this.variants.forEach((v, idx) => {
+                if (!v.sku || v.sku.trim() === '') {
+                    v.sku = 'VAR-' + Date.now() + '-' + idx;
+                }
+            });
+        },
+
+        applyBulk() {
+            this.variants.forEach(v => {
+                if (this.bulkSellPrice !== '') v.sell_price = this.bulkSellPrice;
+                if (this.bulkCostPrice !== '') v.cost_price = this.bulkCostPrice;
+                if (this.bulkStock !== '') v.stock = this.bulkStock;
+            });
         },
 
         generateVariants() {

@@ -12,12 +12,14 @@ class LPController extends Controller
 {
     public function show(Request $request, string $slug)
     {
-        $landingPage = LandingPage::with(['product.options.optionValues', 'product.variants.optionValues'])
-            ->withCount('orders')->where('slug', $slug)
-            ->where('is_active', true)
-            ->firstOrFail();
+        LandingPage::where('slug', $slug)->where('is_active', true)->increment('visits');
 
-        $landingPage->increment('visits');
+        $landingPage = \Illuminate\Support\Facades\Cache::remember("lp_data_{$slug}", 3600, function () use ($slug) {
+            return LandingPage::with(['product.options.optionValues', 'product.variants.optionValues'])
+                ->withCount('orders')->where('slug', $slug)
+                ->where('is_active', true)
+                ->firstOrFail();
+        });
 
         $utmParams = [
             'utm_source' => $request->query('utm_source'),

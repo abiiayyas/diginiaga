@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -39,8 +43,16 @@ class ProductController extends Controller
 
         if ($request->hasFile('images')) {
             $paths = [];
-            foreach ($request->file('images') as $image) {
-                $paths[] = $image->store('products', 'public');
+            $manager = new ImageManager(new Driver());
+            
+            foreach ($request->file('images') as $imageFile) {
+                $image = $manager->read($imageFile->getRealPath());
+                $image->scaleDown(width: 1000);
+                
+                $filename = 'products/' . Str::random(40) . '.webp';
+                Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+                
+                $paths[] = $filename;
             }
             $validated['images'] = $paths;
         }
@@ -75,8 +87,16 @@ class ProductController extends Controller
 
         if ($request->hasFile('images')) {
             $paths = $product->images ?? [];
-            foreach ($request->file('images') as $image) {
-                $paths[] = $image->store('products', 'public');
+            $manager = new ImageManager(new Driver());
+            
+            foreach ($request->file('images') as $imageFile) {
+                $image = $manager->read($imageFile->getRealPath());
+                $image->scaleDown(width: 1000);
+                
+                $filename = 'products/' . Str::random(40) . '.webp';
+                Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+                
+                $paths[] = $filename;
             }
             $validated['images'] = $paths;
         }

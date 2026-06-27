@@ -8,7 +8,7 @@
     <p class="text-sm text-gray-500 mt-1">Ringkasan order hari ini</p>
 </div>
 
-<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8" id="stats-grid">
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8" id="stats-grid">
     <div class="bg-white border-none rounded-2xl shadow-soft p-5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-16 h-16 bg-brand-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out"></div>
         <div class="relative z-10">
@@ -43,6 +43,14 @@
             <p class="text-xs font-semibold text-surface-400 uppercase tracking-wider">Recovery Rate</p>
             <p class="mt-2 text-2xl font-bold {{ $stats['recovery_rate'] >= 10 ? 'text-teal-600' : 'text-gray-600' }}">{{ $stats['recovery_rate'] }}%</p>
             <p class="text-xs text-gray-400 mt-0.5">dari WA reminder</p>
+        </div>
+    </div>
+    <div class="bg-white border-none rounded-2xl shadow-soft p-5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+        <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out"></div>
+        <div class="relative z-10">
+            <p class="text-xs font-semibold text-surface-400 uppercase tracking-wider">Konversi (All)</p>
+            <p class="mt-2 text-2xl font-bold text-blue-600">{{ $stats['conversion_rate'] }}%</p>
+            <p class="text-xs text-gray-400 mt-0.5">dari {{ number_format($stats['total_visits'] ?? 0, 0, ',', '.') }} visit</p>
         </div>
     </div>
 </div>

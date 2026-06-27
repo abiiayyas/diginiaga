@@ -7,6 +7,9 @@ use App\Models\LandingPage;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class LandingPageController extends Controller
 {
@@ -55,13 +58,23 @@ class LandingPageController extends Controller
         ]);
 
         if ($request->hasFile('cover_image')) {
-            $validated['cover_image'] = $request->file('cover_image')->store('landing-pages', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('cover_image')->getRealPath());
+            $image->scaleDown(width: 1200);
+            $filename = 'landing-pages/' . Str::random(40) . '.webp';
+            Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+            $validated['cover_image'] = $filename;
         }
 
         if ($request->hasFile('slider_images')) {
             $paths = [];
+            $manager = new ImageManager(new Driver());
             foreach ($request->file('slider_images') as $file) {
-                $paths[] = $file->store('landing-pages/slider', 'public');
+                $image = $manager->read($file->getRealPath());
+                $image->scaleDown(width: 1000);
+                $filename = 'landing-pages/slider/' . Str::random(40) . '.webp';
+                Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+                $paths[] = $filename;
             }
             $validated['image_slider'] = json_encode($paths);
         } else {
@@ -151,7 +164,12 @@ class LandingPageController extends Controller
             if ($landingPage->cover_image) {
                 Storage::disk('public')->delete($landingPage->cover_image);
             }
-            $validated['cover_image'] = $request->file('cover_image')->store('landing-pages', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('cover_image')->getRealPath());
+            $image->scaleDown(width: 1200);
+            $filename = 'landing-pages/' . Str::random(40) . '.webp';
+            Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+            $validated['cover_image'] = $filename;
         }
 
         if ($request->hasFile('slider_images')) {
@@ -164,8 +182,13 @@ class LandingPageController extends Controller
                 }
             }
             $paths = [];
+            $manager = new ImageManager(new Driver());
             foreach ($request->file('slider_images') as $file) {
-                $paths[] = $file->store('landing-pages/slider', 'public');
+                $image = $manager->read($file->getRealPath());
+                $image->scaleDown(width: 1000);
+                $filename = 'landing-pages/slider/' . Str::random(40) . '.webp';
+                Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+                $paths[] = $filename;
             }
             $validated['image_slider'] = json_encode($paths);
         } elseif ($request->has('keep_slider_images')) {

@@ -23,6 +23,10 @@ class DashboardController extends Controller
             ->where('reminder_count', '>', 0)
             ->count();
 
+        $totalVisits = LandingPage::sum('visits');
+        $totalOrdersEver = Order::count();
+        $conversionRate = $totalVisits > 0 ? round(($totalOrdersEver / $totalVisits) * 100, 2) : 0;
+
         $stats = [
             'total_orders_today' => Order::whereDate('created_at', $today)->count(),
             'total_revenue_today' => Order::whereDate('created_at', $today)
@@ -33,6 +37,8 @@ class DashboardController extends Controller
             'recovery_rate' => $totalPendingEver > 0
                 ? round(($recoveredOrders / $totalPendingEver) * 100, 1)
                 : 0,
+            'conversion_rate' => $conversionRate,
+            'total_visits' => $totalVisits,
         ];
 
         $recentOrders = Order::with(['product', 'landingPage'])
