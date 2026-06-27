@@ -42,7 +42,7 @@ $lpData = [
             <div class="fixed bottom-0 left-0 right-0 lg:left-64 bg-white dark:bg-slate-900 border-t px-6 py-4 flex justify-between items-center z-50">
                 <a href="{{ route('admin.landing-pages.index') }}" class="py-2.5 px-4 rounded-lg text-sm font-medium bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 dark:bg-slate-800/50 transition-colors">Batal</a>
                 <div class="flex gap-3">
-                    <button type="submit" name="is_active" value="0" class="py-2.5 px-4 rounded-lg text-sm font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:text-slate-100 transition-colors">Save as draft</button>
+                    <button type="submit" name="is_active" value="0" class="py-2.5 px-4 rounded-lg text-sm font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-slate-100 transition-colors">Save as draft</button>
                     <button type="button" @click="step = 2; window.scrollTo(0,0);" class="py-2.5 px-6 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors">Next: Preview</button>
                 </div>
             </div>

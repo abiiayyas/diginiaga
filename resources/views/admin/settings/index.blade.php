@@ -12,19 +12,19 @@
     <!-- Tabs Header -->
     <div class="border-b border-gray-200 dark:border-slate-700">
         <nav class="flex space-x-6" aria-label="Tabs">
-            <button @click="activeTab = 'toko'" :class="activeTab === 'toko' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300 hover:border-gray-300 dark:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+            <button @click="activeTab = 'toko'" :class="activeTab === 'toko' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
                 Toko
             </button>
-            <button @click="activeTab = 'profil'" :class="activeTab === 'profil' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300 hover:border-gray-300 dark:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+            <button @click="activeTab = 'profil'" :class="activeTab === 'profil' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
                 Profil & Password
             </button>
-            <button @click="activeTab = 'kurir'" :class="activeTab === 'kurir' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300 hover:border-gray-300 dark:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+            <button @click="activeTab = 'kurir'" :class="activeTab === 'kurir' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
                 Integrasi Kurir
             </button>
-            <button @click="activeTab = 'piksel'" :class="activeTab === 'piksel' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300 hover:border-gray-300 dark:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+            <button @click="activeTab = 'piksel'" :class="activeTab === 'piksel' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
                 Piksel FB (Global)
             </button>
-            <button @click="activeTab = 'notifikasi'" :class="activeTab === 'notifikasi' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300 hover:border-gray-300 dark:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
+            <button @click="activeTab = 'notifikasi'" :class="activeTab === 'notifikasi' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors focus:outline-none">
                 Notifikasi (WA & Telegram)
             </button>
         </nav>

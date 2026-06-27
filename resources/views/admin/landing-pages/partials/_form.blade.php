@@ -166,7 +166,7 @@
             
             {{-- Cover Image --}}
             <div x-show="activeSections.cover" class="p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl relative shadow-sm" style="display: none;">
-                <button type="button" @click="activeSections.cover = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:text-slate-400">✕</button>
+                <button type="button" @click="activeSections.cover = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400">✕</button>
                 <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-4">Cover Image</h3>
                 @if(isset($landingPage) && $landingPage->cover_image)
                 <div class="mb-3">
@@ -179,7 +179,7 @@
 
             {{-- Slider Images --}}
             <div x-show="activeSections.slider" class="p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl relative shadow-sm" style="display: none;">
-                <button type="button" @click="activeSections.slider = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:text-slate-400">✕</button>
+                <button type="button" @click="activeSections.slider = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400">✕</button>
                 <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-4">Gambar Slider</h3>
                 @if(!empty($existingSliderImages))
                 <div class="mb-4 p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border">
@@ -201,7 +201,7 @@
 
             {{-- Embed / YouTube --}}
             <div x-show="activeSections.embed" class="p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl relative shadow-sm" style="display: none;">
-                <button type="button" @click="activeSections.embed = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:text-slate-400">✕</button>
+                <button type="button" @click="activeSections.embed = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400">✕</button>
                 <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-4">Video Embed</h3>
                 <textarea name="embed_code" rows="3" x-model="embed_code" class="py-2 px-3 block w-full border-gray-200 dark:border-slate-700 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="<iframe width='560' height='315' src='https://www.youtube.com/embed/...'></iframe>"></textarea>
                 <p class="text-xs text-gray-400 dark:text-slate-500 mt-2">Tempel kode embed HTML penuh dari platform video.</p>
@@ -209,7 +209,7 @@
 
             {{-- FAQ --}}
             <div x-show="activeSections.faq" class="p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl relative shadow-sm" style="display: none;">
-                <button type="button" @click="activeSections.faq = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:text-slate-400">✕</button>
+                <button type="button" @click="activeSections.faq = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400">✕</button>
                 <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-4">FAQ (Tanya Jawab)</h3>
                 <div class="space-y-3 mb-4">
                     <template x-for="(faq, i) in faqs" :key="i">
@@ -230,7 +230,7 @@
 
             {{-- Testimoni --}}
             <div x-show="activeSections.testi" class="p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl relative shadow-sm" style="display: none;">
-                <button type="button" @click="activeSections.testi = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:text-slate-400">✕</button>
+                <button type="button" @click="activeSections.testi = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400">✕</button>
                 <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-4">Testimoni</h3>
                 <textarea name="testimonials" rows="4" x-model="testimonials" class="py-2 px-3 block w-full border-gray-200 dark:border-slate-700 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Budi | Pembeli | Produknya keren!&#10;Ani | Pelanggan | Puas"></textarea>
                 <p class="text-xs text-gray-400 dark:text-slate-500 mt-2">Format: Nama | Role | Quote (1 testimoni per baris).</p>
@@ -238,7 +238,7 @@
 
             {{-- CTA & Buttons --}}
             <div x-show="activeSections.cta" class="p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl relative shadow-sm" style="display: none;">
-                <button type="button" @click="activeSections.cta = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:text-slate-400">✕</button>
+                <button type="button" @click="activeSections.cta = false" class="absolute top-4 right-4 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400">✕</button>
                 <h3 class="font-semibold text-gray-800 dark:text-slate-200 mb-4">Tombol & Aksi</h3>
                 
                 <div class="space-y-4">

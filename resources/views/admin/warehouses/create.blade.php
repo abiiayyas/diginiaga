@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Tambah Gudang Baru</h1>
-        <a href="{{ route('admin.warehouses.index') }}" class="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:text-slate-100 font-medium text-sm">Kembali</a>
+        <a href="{{ route('admin.warehouses.index') }}" class="text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100 font-medium text-sm">Kembali</a>
     </div>
 
     <form action="{{ route('admin.warehouses.store') }}" method="POST" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden">
