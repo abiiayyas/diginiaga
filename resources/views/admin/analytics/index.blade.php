@@ -8,10 +8,10 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Performa Landing Pages</h1>
         <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">Conversion rate & revenue per LP</p>
     </div>
-    <form method="GET" class="flex gap-2">
-        <input type="date" name="date_from" value="{{ $dateFrom }}" class="py-2 px-3 block border-gray-200 dark:border-slate-700 rounded-lg text-sm">
-        <input type="date" name="date_to" value="{{ $dateTo }}" class="py-2 px-3 block border-gray-200 dark:border-slate-700 rounded-lg text-sm">
-        <button type="submit" class="py-2 px-4 inline-flex items-center gap-x-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">Filter</button>
+    <form method="GET" class="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+        <input type="date" name="date_from" value="{{ $dateFrom }}" class="py-2 px-3 block w-full sm:w-auto border-gray-200 dark:border-slate-700 rounded-lg text-sm flex-1">
+        <input type="date" name="date_to" value="{{ $dateTo }}" class="py-2 px-3 block w-full sm:w-auto border-gray-200 dark:border-slate-700 rounded-lg text-sm flex-1">
+        <button type="submit" class="py-2 px-4 w-full sm:w-auto inline-flex justify-center items-center gap-x-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">Filter</button>
     </form>
 </div>
 
