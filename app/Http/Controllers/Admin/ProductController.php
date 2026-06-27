@@ -116,7 +116,7 @@ class ProductController extends Controller
                     $variant = $product->variants()->updateOrCreate(
                         ['id' => $varData['id'] ?? null],
                         [
-                            'sku' => $varData['sku'],
+                            'sku' => empty($varData['sku']) ? null : $varData['sku'],
                             'sell_price' => $varData['sell_price'],
                             'cost_price' => $varData['cost_price'] ?? 0,
                             'stock' => $varData['stock'] ?? 0,

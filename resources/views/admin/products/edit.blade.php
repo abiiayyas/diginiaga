@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-4xl" x-data="variantManager()">
     <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Produk</h1>
-    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6" @submit="onSubmit">
         @csrf @method('PUT')
         <div class="mb-4"><label class="block text-sm font-medium mb-2">Nama</label><input type="text" name="name" value="{{ old('name',$product->name) }}" required class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
         <div class="mb-4"><label class="block text-sm font-medium mb-2">SKU Supplier</label><input type="text" name="sku_supplier" value="{{ old('sku_supplier',$product->sku_supplier) }}" class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"></div>
@@ -140,6 +140,12 @@ function variantManager() {
         },
         removeOption(index) {
             this.options.splice(index, 1);
+        },
+
+        onSubmit(e) {
+            if (this.hasVariants && this.variants.length === 0) {
+                this.generateVariants();
+            }
         },
 
         generateVariants() {
